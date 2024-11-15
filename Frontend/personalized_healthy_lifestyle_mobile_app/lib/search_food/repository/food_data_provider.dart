@@ -1,7 +1,9 @@
 //search food return List<Food> (id ,name)
 //search specific food return Food
 import 'dart:convert';
+import 'dart:io' show Platform;
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:schedule_generator/search_food/food_api_index.dart';
 
@@ -11,11 +13,20 @@ class FoodRequestFailure implements Exception{}
 
 class FoodApiProvider{
 
-  static const _baseUrl = "localhost:8080";
+  final String _baseUrl;
   final http.Client _httpClient;
 
   FoodApiProvider({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+      : _baseUrl = _getBaseUrl(),
+        _httpClient = httpClient ?? http.Client();
+
+  static String _getBaseUrl() {
+    if (Platform.isAndroid) {
+      return "10.0.2.2:8080"; // Android emulator localhost
+    } else {
+      return "localhost:8080";
+    }
+  }
 
   // api : localhost:8080/food/search
   Future<List<Food>> searchMatchingFood(String query) async {
