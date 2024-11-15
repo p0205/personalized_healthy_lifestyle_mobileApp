@@ -16,6 +16,10 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
   final Food food;
   final String mealType;
   double? amountIntakeInGrams;
+  double? calories;
+  double? carbsInGrams;
+  double? proteinInGrams;
+  double? fatInGrams;
 
   AddMealBloc({required this.food, required this.mealType}): super(const AddMealState()){
     on<NoOfServingsSelected>(_onNoOfServingSelected);
@@ -45,10 +49,6 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
       UserInput event,
     Emitter<AddMealState> emit
   )  async {
-    double? carbsIntake;
-    double? proteinIntake;
-    double? fatIntake;
-    double? energyIntake;
 
     if(state.isNoOfServingSelected) {
 
@@ -56,35 +56,35 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
 
         amountIntakeInGrams = event.userInput * event.food.unitWeight!;
 
-        energyIntake = (event.food.energyPer100g != null && event.food.unitWeight != null)
+        calories = (event.food.energyPer100g != null && event.food.unitWeight != null)
             ? (event.food.energyPer100g!/100) * event.food.unitWeight! * event.userInput : null;
 
-        carbsIntake = (event.food.carbsPer100g != null && event.food.unitWeight != null)
+        carbsInGrams = (event.food.carbsPer100g != null && event.food.unitWeight != null)
             ? (event.food.carbsPer100g!/100) * event.food.unitWeight! * event.userInput : null;
 
-        proteinIntake = (event.food.proteinPer100g != null && event.food.unitWeight != null)
+        proteinInGrams = (event.food.proteinPer100g != null && event.food.unitWeight != null)
             ? (event.food.proteinPer100g!/100) * event.food.unitWeight! * event.userInput : null;
 
-        fatIntake = (event.food.fatPer100g != null)
+        fatInGrams = (event.food.fatPer100g != null)
             ? (event.food.fatPer100g!/100) * event.food.unitWeight! * event.userInput : null;
       }else{
-        energyIntake = carbsIntake = proteinIntake = fatIntake = null;
+        calories = carbsInGrams = proteinInGrams = fatInGrams = null;
       }
     }else{
       amountIntakeInGrams = event.userInput ;
-      energyIntake = (event.food.energyPer100g != null)
+      calories = (event.food.energyPer100g != null)
           ? (event.food.energyPer100g!/100) * event.userInput : null;
 
-      carbsIntake = (event.food.carbsPer100g != null)
+      carbsInGrams = (event.food.carbsPer100g != null)
           ? (event.food.carbsPer100g!/100) * event.userInput : null;
 
-      proteinIntake = (event.food.proteinPer100g != null)
+      proteinInGrams = (event.food.proteinPer100g != null)
           ? (event.food.proteinPer100g!/100) * event.userInput : null;
 
-      fatIntake = (event.food.fatPer100g != null)
+      fatInGrams = (event.food.fatPer100g != null)
           ? (event.food.fatPer100g!/100) * event.userInput: null;
     }
-    emit(state.copyWith(isCalculated: true, carbsIntake: carbsIntake, proteinIntake: proteinIntake, fatIntake: fatIntake, energyIntake: energyIntake));
+    emit(state.copyWith(isCalculated: true, carbsIntake: carbsInGrams, proteinIntake: proteinInGrams, fatIntake: fatInGrams, energyIntake: calories));
   }
 
   Future<void> _onBtnClicked(
@@ -112,7 +112,7 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
       ) async {
       try{
         User user = await userRepository.fetchUser(1) ;
-        mealRepository.addMeal(user, event.mealType, amountIntakeInGrams! , food);
+        mealRepository.addMeal(user, event.mealType,  double.parse(amountIntakeInGrams!.toStringAsFixed(2)) , double.parse(carbsInGrams!.toStringAsFixed(2)),  double.parse(proteinInGrams!.toStringAsFixed(2)),  double.parse(fatInGrams!.toStringAsFixed(2)),  double.parse(calories!.toStringAsFixed(2)), food);
         emit(state.copyWith(status: AddMealStatus.mealAdded));
       }catch(e){
         emit(state.copyWith(status: AddMealStatus.failure, message: e.toString()));

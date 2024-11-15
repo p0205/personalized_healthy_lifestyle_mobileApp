@@ -1,14 +1,25 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../../search_food/models/user.dart';
 
 class UserDataProvider {
-  // Add http:// to the base URL
-  static const _baseUrl = "http://localhost:8080/user";
+
+  final String _baseUrl;
   final http.Client _httpClient;
 
   UserDataProvider({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+      : _baseUrl = _getBaseUrl(),
+        _httpClient = httpClient ?? http.Client();
+
+  static String _getBaseUrl() {
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8080/user"; // Android emulator localhost
+    } else{
+      return "http://localhost:8080/user"; // Default for other platforms
+    }
+  }
+
 
   Future<User> fetchUser(int id) async {
     try {
