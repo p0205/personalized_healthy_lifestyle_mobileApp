@@ -14,9 +14,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class AddFoodToMealReq {
-	
+
 	private MealType mealType;
 	private UserDTO user;
 	private Double amountInGrams;
+	private Double calories;
+	private Double carbsInGrams;
+	private Double proteinInGrams;
+	private Double fatInGrams;
 	private Food food;
 }
