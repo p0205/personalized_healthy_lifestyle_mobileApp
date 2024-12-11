@@ -1,0 +1,42 @@
+
+
+import 'package:schedule_generator/sport/sport_models/user_sport.dart';
+import 'package:schedule_generator/sport/sport_repository/sport_data_provider.dart';
+
+import '../sport_models/sport.dart';
+import '../sport_models/sport_summary.dart';
+
+class SportRepository{
+
+  final SportDataProvider sportDataProvider = SportDataProvider();
+
+  Future<List<Sport>> searchMatchingSport (query) async {
+    List<Sport> foods = await sportDataProvider.getMatchingSportList(query);
+    return foods;
+  }
+
+  Future<Sport> getSport(int id) async{
+    Sport sport = await sportDataProvider.getSport(id);
+    return sport;
+  }
+
+  // Future<void> addSport(Sport sport) async {
+  //   await sportDataProvider.addSport(sport);
+  // }
+
+  Future<Map<String, List<UserSport>>> getUserSportListByDate(int userId, DateTime date) async {
+    return await sportDataProvider.getUserSportListByDate(userId, date);
+  }
+
+  Future<void> addUserMeal (int userId, int sportId, double durationInHours, double calsBurnt) async {
+    await sportDataProvider.addUserSport(userId, sportId, durationInHours, calsBurnt);
+  }
+
+  Future<SportSummary> getSportSummary(int userId,DateTime date) async {
+    return await sportDataProvider.getSportSummary(userId, date);
+  }
+
+  Future<void> deleteUserSport(int userSportId) async{
+    await sportDataProvider.deleteUserSport(userSportId);
+  }
+}

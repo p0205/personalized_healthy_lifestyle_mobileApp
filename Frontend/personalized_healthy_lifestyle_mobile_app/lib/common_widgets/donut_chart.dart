@@ -25,7 +25,7 @@ class DonutChart extends StatelessWidget {
     double valueTotal = dataList.fold(0, (sum, item) => sum + item.value);
 
     for (var data in dataList) {
-      data.percentage = data.value / valueTotal;
+     data.value == 0 ? data.percentage = 0  : data.percentage = data.value / valueTotal;
     }
 
     final double screenWidth = MediaQuery.of(context).size.width;
