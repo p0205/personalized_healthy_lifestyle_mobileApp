@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io' show Platform;
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
 import 'package:schedule_generator/calories_counter/models/user_meal.dart';
@@ -12,8 +11,8 @@ import 'package:schedule_generator/calories_counter/models/user_meal.dart';
 import '../models/meal.dart';
 
 //Exception throw when foodSearch fails
-class getMatchingFoodListFailure implements Exception{}
-class getFoodFailure implements Exception{}
+class GetMatchingFoodListFailure implements Exception{}
+class GetFoodFailure implements Exception{}
 class AddMealFailure implements Exception{}
 class AddUserMealFailure implements Exception{}
 class DeleteUserMealFailure implements Exception{}
@@ -41,7 +40,7 @@ class MealApiProvider{
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
-      throw getMatchingFoodListFailure();
+      throw GetMatchingFoodListFailure();
     }
     List<Meal> foods =  Meal.fromJsonArray(json.decode(response.body));
     return foods;
@@ -55,7 +54,7 @@ class MealApiProvider{
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
-      throw getFoodFailure();
+      throw GetFoodFailure();
     }
     Meal food =  Meal.fromJson(json.decode(response.body));
     return food;
@@ -77,7 +76,6 @@ class MealApiProvider{
 
   // api : GET localhost:8080/meal/user?userId=?,date=?
   Future<Map<String, List<UserMeal>>> getUserMealListByDate(int userId, DateTime date) async {
-
     String formatedDate = formatDate(date);
 
     final uri = Uri.http(_baseUrl,"/meal/user",{"userId": userId.toString(), "date": formatedDate});
@@ -88,8 +86,6 @@ class MealApiProvider{
     }
 
     final Map<String, dynamic> data = json.decode(response.body);
-
-    print(data.toString());
     return data.map((key, value) {
       final meals = (value as List).map((meal) => UserMeal.fromJson(meal)).toList();
       return MapEntry(key, meals);
@@ -116,7 +112,6 @@ class MealApiProvider{
     );
 
     if(response.statusCode != 201){
-      print(response.statusCode);
       throw AddUserMealFailure();
     }
   }

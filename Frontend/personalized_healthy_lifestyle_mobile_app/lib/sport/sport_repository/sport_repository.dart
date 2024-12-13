@@ -28,7 +28,7 @@ class SportRepository{
     return await sportDataProvider.getUserSportListByDate(userId, date);
   }
 
-  Future<void> addUserMeal (int userId, int sportId, double durationInHours, double calsBurnt) async {
+  Future<void> addUserSport (int userId, int sportId, double durationInHours, double calsBurnt) async {
     await sportDataProvider.addUserSport(userId, sportId, durationInHours, calsBurnt);
   }
 

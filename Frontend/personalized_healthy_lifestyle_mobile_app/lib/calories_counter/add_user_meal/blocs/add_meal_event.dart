@@ -6,6 +6,7 @@ part of 'add_meal_bloc.dart';
 abstract class AddMealEvent extends Equatable{
   const AddMealEvent();
 
+  @override
   List<Object?> get props => [];
 }
 
@@ -18,6 +19,7 @@ class UserInput extends AddMealEvent{
   final Meal food;
 
   const UserInput({required this.food , required this.userInput});
+  @override
   List<Object?> get props => [food, userInput];
 }
 
@@ -48,5 +50,6 @@ class AddMealBtnClicked extends AddMealEvent{
 
       }
       );
+  @override
   List<Object?> get props => [ mealType, amountInGrams, carbsInGrams, proteinInGrams, fatInGrams, calories];
 }

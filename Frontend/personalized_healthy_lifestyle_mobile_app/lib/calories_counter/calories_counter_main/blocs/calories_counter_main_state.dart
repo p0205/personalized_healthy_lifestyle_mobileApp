@@ -10,16 +10,6 @@ enum CaloriesCounterMainStatus{
   mealDeleted
 }
 
-
-extension CaloriesCounterMainStateX on CaloriesCounterMainState{
-  bool get isInitial => this == CaloriesCounterMainStatus.initial;
-  bool get isLoading => this == CaloriesCounterMainStatus.loading;
-  bool get isMealListLoaded => this == CaloriesCounterMainStatus.mealListLoaded;
-  bool get mealListReloaded => this == CaloriesCounterMainStatus.mealListReloaded;
-  bool get isAddMealBtnClicked => this == CaloriesCounterMainStatus.addMealBtnClicked;
-  bool get isDeleteMeal => this == CaloriesCounterMainStatus.mealDeleted;
-}
-
 class CaloriesCounterMainState extends Equatable{
   final Map<String, List<UserMeal>?>? mealList;
   final CaloriesCounterMainStatus status;

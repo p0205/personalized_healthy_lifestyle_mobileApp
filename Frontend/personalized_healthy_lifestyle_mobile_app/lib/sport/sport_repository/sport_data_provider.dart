@@ -36,6 +36,7 @@ class SportDataProvider{
 
   // api : GET localhost:8080/sport/search
   Future<List<Sport>> getMatchingSportList(String query) async {
+
     final uri = Uri.http(_baseUrl,"/sport/search",{'query':query});
     final response = await _httpClient.get(uri);
 
@@ -94,23 +95,26 @@ class SportDataProvider{
 
   // api : POST localhost:8080/sport/user
   Future<void> addUserSport(int userId,int sportId, double durationInHours, double caloriesBurnt) async {
+    print("add user sport provider");
     Map<String,Object> request = {
       "userId": userId,
-      "mealId": sportId,
+      "sportId": sportId,
       "durationInHours": durationInHours,
-      "caloriesBurnt": caloriesBurnt,
     };
-
+    print("add user sport provider");
     final uri = Uri.http(_baseUrl,"/sport/user");
+    print("add user sport provider");
     final response = await _httpClient.post(
         uri,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(request)
     );
-
+    print(response.statusCode);
     if(response.statusCode != 201){
       throw AddUserSportFailure();
     }
+
+
   }
 
   // api : GET localhost:8080/sport/user/{userId}/summary?date=?
@@ -123,8 +127,9 @@ class SportDataProvider{
     if(response.statusCode != 200){
       throw GetTotalCalsBurntFailure();
     }
+
     final Map<String, dynamic> data = json.decode(response.body);
-    print(data.toString());
+
     return SportSummary.fromJson(data);
   }
 

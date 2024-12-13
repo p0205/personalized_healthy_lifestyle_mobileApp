@@ -1,8 +1,8 @@
-import 'dart:convert';
+
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
-import '../search_meal/models/user.dart';
+
 
 class GetUserWeightFailure implements Exception{}
 

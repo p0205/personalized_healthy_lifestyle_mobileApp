@@ -1,8 +1,10 @@
 
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
 
+import '../models/meal.dart';
 import '../models/user_meal.dart';
-import '../search_meal/food_api_index.dart';
+import 'meal_data_provider.dart';
+
 
 class MealApiRepository{
 
@@ -27,9 +29,7 @@ class MealApiRepository{
   }
 
   Future<void> addUserMeal (int userId, String mealType, double amountInGrams,double carbsInGrams, double proteinInGrams, double fatInGrams, double calories, int mealId) async {
-    print("Enter addUserMeal Repo");
     await mealApiProvider.addUserMeal(userId, mealType,  amountInGrams, carbsInGrams,  proteinInGrams,  fatInGrams,  calories,  mealId);
-    print("addUserMeal Repo End");
   }
 
   Future<MealSummary> getNutritionalSummary(int userId,DateTime date) async {

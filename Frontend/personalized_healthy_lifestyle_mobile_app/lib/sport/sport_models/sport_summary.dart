@@ -8,7 +8,7 @@ class SportSummary {
 
   factory SportSummary.fromJson(Map<String, dynamic> json) {
     return SportSummary(
-      json['date'], // Assuming 'date' is always a string
+      json['date'],
       json['totalCalsBurnt']?.toDouble() ?? 0.0, // Handle possible null or missing value
       _parseCaloriesByType(json['calsBurntByType'] ?? {}),
     );

@@ -113,7 +113,7 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
                   int userId;
                   if(userState is LoginSuccess){
                     userId = userState.userId;
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>

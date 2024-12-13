@@ -30,7 +30,7 @@ class CalculateBtnClicked extends AddUserSportEvent{}
 class AddSportBtnClicked extends AddUserSportEvent{
 
   final double durationInHours;
-  final double? caloriesBurnt;
+  final double caloriesBurnt;
 
 
   const AddSportBtnClicked(

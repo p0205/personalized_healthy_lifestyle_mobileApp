@@ -12,6 +12,7 @@ class SearchQueryChanged extends SearchFoodEvent{
   //constructor
   const SearchQueryChanged({required this.query});
 
+  @override
   List<Object?> get props => [query];
 }
 

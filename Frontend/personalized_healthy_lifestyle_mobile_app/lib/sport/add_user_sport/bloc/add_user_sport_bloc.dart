@@ -5,8 +5,6 @@ import 'package:schedule_generator/sport/sport_repository/sport_repository.dart'
 
 import '../../sport_models/sport.dart';
 
-
-
 part 'add_user_sport_event.dart';
 part 'add_user_sport_state.dart';
 
@@ -28,7 +26,7 @@ class AddUserSportBloc extends Bloc<AddUserSportEvent,AddUserSportState>{
     on<UserInput>(_onUserInput);
     on<CalculateBtnClicked>(_onCalculateBtnClicked);
     on<DisposeCalculation>(_onDisposeCalculation);
-    on<AddSportBtnClicked>(_onAddMeal);
+    on<AddSportBtnClicked>(_onAddSport);
   }
 
   Future<void> _onDurationInHoursSelected(
@@ -65,8 +63,14 @@ class AddUserSportBloc extends Bloc<AddUserSportEvent,AddUserSportState>{
       CalculateBtnClicked event,
       Emitter<AddUserSportState> emit
       ) async {
-
-
+    final double? caloriesBurnt;
+    final String userWeight = await userRepository.getUserWeight(userId);
+    try{
+      caloriesBurnt = state.durationInHours! * double.parse(userWeight) * sport.caloriesBurntPerHourPerKg!;
+      emit(state.copyWith(isCalculated: true, caloriesBurnt: caloriesBurnt));
+    }catch(e){
+      emit(state.copyWith(status: AddUserSportStatus.failure,message: e.toString()));
+    }
   }
 
   Future<void> _onDisposeCalculation(
@@ -77,15 +81,16 @@ class AddUserSportBloc extends Bloc<AddUserSportEvent,AddUserSportState>{
   }
 
 
-  Future<void> _onAddMeal(
+  Future<void> _onAddSport(
       AddSportBtnClicked event,
       Emitter<AddUserSportState> emit
       ) async {
     try{
-      await mealRepository.addUserMeal(state.userId, event.mealType, double.parse(state.amountIntakeInGrams!.toStringAsFixed(2)) , double.parse(state.carbsIntake!.toStringAsFixed(2)),  double.parse(state.proteinIntake!.toStringAsFixed(2)),  double.parse(state.fatIntake!.toStringAsFixed(2)),  double.parse(state.energyIntake!.toStringAsFixed(2)), state.mealId);
-      emit(state.copyWith(status: AddMealStatus.mealAdded));
+      print("onAddMeal bloc");
+      await sportRepository.addUserSport(userId, sport.id!, state.durationInHours!, state.caloriesBurnt!);
+      emit(state.copyWith(status: AddUserSportStatus.userSportAdded));
     }catch(e){
-      emit(state.copyWith(status: AddMealStatus.failure, message: e.toString()));
+      emit(state.copyWith(status: AddUserSportStatus.failure, message: e.toString()));
     }
   }
 }

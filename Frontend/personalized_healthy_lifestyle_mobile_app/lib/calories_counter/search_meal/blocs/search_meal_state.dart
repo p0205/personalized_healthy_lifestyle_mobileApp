@@ -1,12 +1,3 @@
-// initial state
-// textChanged state
-// loading state
-// success state
-// no result state
-// failure state
-
-
-
 
 part of 'search_meal_bloc.dart';
 
@@ -18,13 +9,6 @@ enum SearchFoodStatus {
   selected
 }
 
-extension SearchFoodStateX on SearchFoodState {
-  bool get isInitial => this == SearchFoodStatus.initial;
-  bool get isLoading => this == SearchFoodStatus.loading;
-  bool get isSuccess => this == SearchFoodStatus.foodsLoaded;
-  bool get isFailure => this == SearchFoodStatus.failure;
-  bool get isSelected => this == SearchFoodStatus.selected;
-}
 
 class SearchFoodState extends Equatable{
 

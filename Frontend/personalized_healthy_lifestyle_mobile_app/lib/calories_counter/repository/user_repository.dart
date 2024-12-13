@@ -1,7 +1,7 @@
 
 import 'package:schedule_generator/calories_counter/repository/user_data_provider.dart';
 
-import '../search_meal/models/user.dart';
+
 
 class UserRepository{
 

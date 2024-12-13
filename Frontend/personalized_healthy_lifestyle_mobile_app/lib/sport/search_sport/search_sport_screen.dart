@@ -1,6 +1,9 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:schedule_generator/sport/add_user_sport/add_user_sport_screen.dart';
 import 'package:schedule_generator/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_state.dart';
 
@@ -8,7 +11,10 @@ import '../../user/blocs/user_bloc.dart';
 
 
 class SearchSportScreen extends StatelessWidget {
-  const SearchSportScreen({super.key});
+
+  final String date;
+
+  const SearchSportScreen({super.key, required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +23,19 @@ class SearchSportScreen extends StatelessWidget {
         title: const Text('Add Sport'),
         backgroundColor: Colors.blueAccent,
       ),
-      body: const Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: DebouncedSearchBar(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: DebouncedSearchBar(date: date),
       ),
     );
   }
 }
 
 class DebouncedSearchBar extends StatefulWidget {
-  const DebouncedSearchBar({super.key});
+
+  final String date;
+
+  const DebouncedSearchBar({super.key,required this.date});
 
 
   @override
@@ -103,28 +112,24 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
               }
              return Container();
             }, listener: (context, state) {
-            // final userState = BlocProvider.of<UserBloc>(context).state;
-            //
-            // int userId;
-            // if(userState is LoginSuccess){
-            //   userId = userState.userId;
-            //   Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) =>
-            //       // BlocProvider.value(
-            //       // value: BlocProvider.of<SearchFoodBloc>(context),
-            //       // child:
-            //
-            //       FoodDetailsPage(meal: state.selectedFood!, mealType: widget.mealType, userId: userId),
-            //     ),
-            //     // )
-            //   );
-            // }
+            final userState = BlocProvider.of<UserBloc>(context).state;
+
+            int userId;
+            if(userState is LoginSuccess){
+
+              userId = userState.userId;
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddUserSportScreen(sport: state.selectedSport!, userId: userId, date: widget.date),
+                ),
+              );
+            }
           },
-            // listenWhen: (context,state){
-              // return (state.status == SearchFoodStatus.selected && state.selectedFood!=null);
-            // },
+            listenWhen: (context,state){
+              return (state.status == SearchSportStatus.selected && state.selectedSport!=null);
+            },
           )];
       },
     );

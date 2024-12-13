@@ -4,11 +4,11 @@ import 'package:rxdart/rxdart.dart';
 
 
 import '../../models/meal.dart';
-import '../food_api_index.dart';
-
 
 
 import 'package:equatable/equatable.dart';
+
+import '../../repository/meal_repository.dart';
 
 part 'search_meal_state.dart';
 part 'search_meal_event.dart';

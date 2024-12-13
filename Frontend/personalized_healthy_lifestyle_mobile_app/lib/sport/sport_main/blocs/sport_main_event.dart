@@ -16,7 +16,7 @@ class AddBtnClicked extends SportMainEvent {
 
 class LoadUserSportList extends SportMainEvent {}
 
-class ReloadSportList extends SportMainEvent {}
+class SportAdded extends SportMainEvent {}
 
 class DeleteSportBtnClicked extends SportMainEvent{
   final int userSportId;

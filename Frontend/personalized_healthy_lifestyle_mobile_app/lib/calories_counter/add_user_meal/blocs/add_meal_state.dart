@@ -12,15 +12,6 @@ enum AddMealStatus{
   failure
 }
 
-
-extension AddMealStateX on AddMealState {
-  bool get isInitial => this == AddMealStatus.initial;
-  bool get isLoading => this == AddMealStatus.loading;
-  bool get isMealAdded => this == AddMealStatus.mealAdded;
-  bool get isFailure => this == AddMealStatus.failure;
-}
-
-
 class AddMealState extends Equatable {
   final AddMealStatus status;
   final double? amountIntakeInGrams;

@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:schedule_generator/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:schedule_generator/sport/sport_models/sport_summary.dart';
 import 'package:schedule_generator/sport/sport_models/user_sport.dart';
 import '../../../common_widgets/donut_chart.dart';
@@ -10,9 +9,9 @@ import '../blocs/sport_main_bloc.dart';
 
 class SportMainPage extends StatefulWidget{
 
-  final String date;
 
-  const SportMainPage({super.key,required this.date});
+
+  const SportMainPage({super.key});
 
   @override
   State<SportMainPage> createState() => _SportMainPageState();
@@ -35,47 +34,73 @@ class _SportMainPageState extends State<SportMainPage> {
             body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Text(
-                      widget.date,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontFamily: 'Itim',
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-                    BlocBuilder<SportMainBloc,SportMainState>(
-                        builder: (BuildContext context, SportMainState state) {
-                          final model = context.read<SportMainBloc>();
-                          final sportList = model.state.sportList;
-                          final summary = model.state.sportSummary;
+                child: BlocBuilder<SportMainBloc,SportMainState>(
+                  builder: (BuildContext context, SportMainState state) {
 
-                          if (state.status == SportMainStatus.loading) {
-                            return const Padding(
-                              padding: EdgeInsets.all(10.0),
-                              child: CircularProgressIndicator()
-                            );
-                          }
+                    final model = context.read<SportMainBloc>();
+                    final sportList = model.state.sportList;
+                    final summary = model.state.sportSummary;
+                    final List<String> sectionOrder = [];
+                    sportList.forEach((key, value) {
+                      sectionOrder.add(key); });
+                    if (state.status == SportMainStatus.loading) {
+                      return  const Padding(
+                       padding: EdgeInsets.all(10.0),
+                       child: CircularProgressIndicator()
+                      );
+                    }
 
-                          if(state.status == SportMainStatus.noRecordFound){
-                            return const Padding(
-                              padding: EdgeInsets.all(10.0),
-                              child: Center(child: Text("No results found")),
-                            );
-                          }
-
-                          final List<String> sectionOrder = [];
-                          sportList.forEach((key, value) {
-                            sectionOrder.add(key);
-                          }
-                          );
-
+                    if(state.status == SportMainStatus.noRecordFound){
                       return Column(
                         children: [
-                          CaloriesChart(summary: summary!),
+                          Text(
+                            state.dateString!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontFamily: 'Itim',
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Center(child: Text("No results found")),
+                          ),
+                          ElevatedButton(onPressed: (){
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SearchSportScreen(date: state.dateString!),
+                              ),
+                            );
+                          },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                foregroundColor: Colors.white,
+
+                                padding: const EdgeInsets.all(10),
+                              ),
+                              child: const Text("Add New Sport"))
+                        ],
+                      );
+                    }
+
+                  return Column(
+                    children: [
+                      Text(
+                        summary!.date,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontFamily: 'Itim',
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      Column(
+                          children: [
+                          CaloriesChart(summary: summary),
                           const SizedBox(height: 30),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,13 +118,10 @@ class _SportMainPageState extends State<SportMainPage> {
                                 ),
                               ),
                               ElevatedButton(onPressed: (){
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => BlocProvider(
-                                      create: (context) => SearchSportBloc(),
-                                      child: const SearchSportScreen(), // The screen that uses the bloc
-                                    ),
+                                    builder: (context) => SearchSportScreen(date: summary.date),
                                   ),
                                 );
                               },
@@ -112,100 +134,35 @@ class _SportMainPageState extends State<SportMainPage> {
                                   child: const Icon(Icons.add))
                             ],
                           ),
+
                           ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: summary.calsBurntByType.length,
-                            itemBuilder: (context,index){
-                              final String sportType = sectionOrder[index];  // Access the section name from predefined order
-                              List<UserSport>? sports = sportList[sportType];  // Get the meals for this section
-                              double totalCalsBurnt = summary.calsBurntByType[sportType]!;
-                              return SportCard(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: summary.calsBurntByType.length,
+                              itemBuilder: (context,index){
+                                final String sportType = sectionOrder[index];  // Access the section name from predefined order
+                                List<UserSport>? sports = sportList[sportType];  // Get the meals for this section
+                                double totalCalsBurnt = summary.calsBurntByType[sportType]!;
+                                return SportCard(
                                   totalCalsBurnt: totalCalsBurnt,
                                   sportType: sportType, // For each mealType, has one FoodIntake card
                                   sports: sports,
                                 );
-                            })
-                        ],
-                      );
+                              })
+                          ],
+                        )
 
 
 
-                        }),
-                  ],
-                ),
+                    ],
+                  );
+                },
+              ),
               ),
             )
         );
   }
 }
-
-// class CaloriesCounterPage extends StatefulWidget{
-//   late final Map<String, List<UserMeal>?>? mealList;
-//   late final double? caloriesLeft;
-//   @override
-//   State<CaloriesCounterPage> createState() => _CaloriesCounterPageState();
-// }
-//
-// class _CaloriesCounterPageState extends State<CaloriesCounterPage> {
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Calories Counter"),
-//         backgroundColor: Colors.blueAccent,
-//         titleTextStyle: const TextStyle(
-//             fontFamily: 'Itim',
-//             fontSize: 25,
-//             fontWeight: FontWeight.bold
-//         ),
-//       ),
-//       body: BlocConsumer<CaloriesCounterMainBloc,CaloriesCounterMainState>(
-//         builder: (context,state){
-//           if(state.isLoading) {
-//             return const CircularProgressIndicator();
-//           }
-//           if(state.isMealListLoaded){
-//             widget.caloriesLeft = state.caloriesLeft;
-//             widget.mealList = state.mealList;
-//             return SingleChildScrollView(
-//               child: Padding(
-//                 padding: const EdgeInsets.all(8.0),
-//                 child: Column(
-//                   children: [
-//                     CaloriesChart(calories: 500),
-//                     const SizedBox(height: 10),
-//                     ListView.builder(
-//                         shrinkWrap: true,
-//                         physics: const NeverScrollableScrollPhysics(),
-//                         itemCount: widget.mealList?.keys.length ?? 0,
-//                         itemBuilder: (context,index){
-//                           final String mealType = widget.mealList?.keys.elementAt(index) ?? "";
-//                           List<UserMeal>? meals = widget.mealList?[mealType];// key at this index
-//                           return FoodIntakeCard(
-//                             section: mealType, // For each mealType, has one FoodIntake card
-//                             meals: meals!,
-//                           );
-//
-//                         }),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           }
-//           print(state.status);
-//         return const Center(
-//           child: Text("No Record Today"),
-//         );
-//       }, listener: (BuildContext context, CaloriesCounterMainState state) {  } ,
-//
-//       ),
-//     );
-//   }
-// }
-//
-
 
 class CaloriesChart extends StatelessWidget {
 
@@ -338,9 +295,10 @@ class _SportCardState extends State<SportCard> {
                                         ElevatedButton(
                                           child: const Text("OK"),
                                           onPressed: () {
-                                            // final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
-                                            // caloriesCounterBloc.add(DeleteMealBtnClicked(userMealId: meal.id));
-                                            // Navigator.pop(context);
+                                            final sportMainBloc = context.read<SportMainBloc>();
+                                            sportMainBloc.add(DeleteSportBtnClicked(userSportId: sport.id));
+
+                                            Navigator.pop(context);
                                           },
                                         ),
                                         ElevatedButton(

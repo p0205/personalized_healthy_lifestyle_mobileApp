@@ -82,7 +82,7 @@ class FoodDetailsPage extends StatelessWidget{
 
                 const SizedBox(height: 10), // Add top spacing
 
-                _toggleButton(
+                ToggleButton(
                     meal: meal,
                     mealType: mealType,
                 ),
@@ -96,22 +96,22 @@ class FoodDetailsPage extends StatelessWidget{
   
 }
 
-class _toggleButton extends StatefulWidget{
+class ToggleButton extends StatefulWidget{
 
   final Meal meal;
   final String mealType;
 
-  const _toggleButton({
-    Key? key,
+  const ToggleButton({
+    super.key,
     required this.meal,
     required this.mealType
-  }) : super(key: key);
+  });
 
   @override
-  State<_toggleButton> createState() => _toggleButtonState();
+  State<ToggleButton> createState() => _ToggleButtonState();
 }
 
-class _toggleButtonState extends State<_toggleButton> {
+class _ToggleButtonState extends State<ToggleButton> {
 
   final TextEditingController _controller = TextEditingController();
 
@@ -247,19 +247,9 @@ class _toggleButtonState extends State<_toggleButton> {
 
                 final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
                 caloriesCounterBloc.add(ReloadMealList());
-               //
-               // bool isNewDataLoaded = false;
-               // // Show loading dialog
-               //
-               // // Listen to CaloriesCounterMainBloc state changes
+                // Listen to CaloriesCounterMainBloc state changes
                caloriesCounterBloc.stream.listen((counterState) {
-               //
-               //   if(counterState.status !=  CaloriesCounterMainStatus.loading){
-               //     if (counterState.mealList != null || counterState.mealList!.isNotEmpty) {
-               //       isNewDataLoaded = true;  // Mark that we've started loading new data
-               //     }
-               //   }
-                 if (counterState.status == CaloriesCounterMainStatus.mealListReloaded ) {
+                 if (counterState.status == CaloriesCounterMainStatus.mealListReloaded) {
                    showDialog(
                      context: context,
                      builder: (context) => Center(
@@ -274,11 +264,10 @@ class _toggleButtonState extends State<_toggleButton> {
                                Navigator.pushReplacement(
                                  context,
                                  MaterialPageRoute(
-                                   builder: (context) => CaloriesCounterMain(
-                                     mealList: counterState.mealList,
-                                     summary: counterState.summary!,
+                                   builder: (context) => const CaloriesCounterMain(
+
                                    ),
-                                 ),
+                                 )
                                );// Close the dialog
                              },
                            ),
@@ -303,7 +292,7 @@ class _toggleButtonState extends State<_toggleButton> {
 
 class NutrientCardGroup extends StatefulWidget {
 
-   const NutrientCardGroup({super.key});
+  const NutrientCardGroup({super.key});
   @override
   _NutrientCardGroupState createState() => _NutrientCardGroupState();
 }

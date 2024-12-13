@@ -25,16 +25,17 @@ void main() {
             ),
             BlocProvider<CaloriesCounterMainBloc>(
               create: (context) =>
-                  CaloriesCounterMainBloc(userId: 1,date: date),
+                  CaloriesCounterMainBloc(userId: userId,date: date),
             ),
             BlocProvider<SportMainBloc>(
               create: (context) =>
-                  SportMainBloc(userId: 1,date: date),
+                  SportMainBloc(userId: userId,date: date),
             ),
             BlocProvider<UserBloc>(
               create: (context) =>
                   UserBloc(),
             ),
+
           ],
           child: const MyApp()
       ));
@@ -68,11 +69,11 @@ class _CaloriesCounterState extends State<CaloriesCounter> {
   Widget build(BuildContext context) {
     return BlocListener<CaloriesCounterMainBloc,CaloriesCounterMainState>(
       listener: (context, state) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  CaloriesCounterMain(mealList: state.mealList, summary : state.summary!)),
+                  const CaloriesCounterMain()),
         );
       },
       listenWhen: (context,state){
@@ -98,12 +99,10 @@ class _CaloriesCounterState extends State<CaloriesCounter> {
                         onPressed: () {
                           final model = context.read<SportMainBloc>();
                           model.add(LoadUserSportList());
-                          print("Nagivate");
-                          print(model.state.sportSummary);
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SportMainPage(date: widget.date),
+                              builder: (context) => const SportMainPage(),
                             ),
                           );
                         },

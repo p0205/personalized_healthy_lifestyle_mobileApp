@@ -15,8 +15,8 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
   SportMainBloc({required this.userId, required this.date}): super(const SportMainState(status: SportMainStatus.loading)){
     on<AddBtnClicked>(_addSportBtnClicked);
     on<LoadUserSportList>(_loadUserSportList);
-    // on<ReloadSportList>(_reload);
-    // on<DeleteSportBtnClicked>(_delete);
+    on<SportAdded>(_sportAdded);
+    on<DeleteSportBtnClicked>(_delete);
   }
 
   Future<void> _addSportBtnClicked(
@@ -34,33 +34,40 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
     final sportList = await sportRepository.getUserSportListByDate(userId, date);
     final SportSummary sportSummary = await sportRepository.getSportSummary(userId,date);
     if(sportList.isNotEmpty){
-      emit(state.copyWith(status: SportMainStatus.sportListLoaded, sportList: sportList, sportSummary: sportSummary));
+      emit(state.copyWith(status: SportMainStatus.sportListLoaded, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
     }else{
-      emit(state.copyWith(status: SportMainStatus.noRecordFound));
+      emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
     }
   }
 
-  // Future<void> _reload(
-  //     ReloadSportList event,
-  //     Emitter<SportMainState> emit
-  //     )async{
-  //   emit(state.copyWith(status: SportMainStatus.loading, mealList: {}));
-  //   final mealList = await mealRepository.getUserMealListByDate(userId, date);
-  //   final nutritionalSummary = await mealRepository.getNutritionalSummary(userId,date);
-  //   emit(state.copyWith(status: SportMainStatus.mealListReloaded, mealList: mealList, summary: nutritionalSummary));
-  // }
+  Future<void> _sportAdded(
+      SportAdded event,
+      Emitter<SportMainState> emit
+      )async{
+    emit(state.copyWith(status: SportMainStatus.loading, sportList: {}));
+    final sportList = await sportRepository.getUserSportListByDate(userId, date);
+    final SportSummary sportSummary = await sportRepository.getSportSummary(userId,date);
+    if(sportList.isNotEmpty){
+      emit(state.copyWith(status: SportMainStatus.sportAdded, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
+    }else{
+      emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
+    }
+  }
 
-  // Future<void> _delete(
-  //     DeleteSportBtnClicked event,
-  //     Emitter<SportMainState> emit
-  //     )async{
-  //   emit(state.copyWith(status: SportMainStatus.loading, sportList: {}));
-  //   await sportRepository.deleteUserMeal(event.userMealId);
-  //   _init;
-  //   print("after init");
-  //   print(state.mealList.toString());
-  //   emit(state.copyWith(status: SportMainStatus.mealDeleted));
-  // }
+  Future<void> _delete(
+      DeleteSportBtnClicked event,
+      Emitter<SportMainState> emit
+      )async{
+    emit(state.copyWith(status: SportMainStatus.loading, sportList: {}));
+    await sportRepository.deleteUserSport(event.userSportId);
+    final sportList = await sportRepository.getUserSportListByDate(userId, date);
+    final SportSummary sportSummary = await sportRepository.getSportSummary(userId,date);
+    if(sportList.isNotEmpty){
+      emit(state.copyWith(status: SportMainStatus.sportDeleted, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
+    }else{
+      emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
+    }
+  }
 }
 
 
