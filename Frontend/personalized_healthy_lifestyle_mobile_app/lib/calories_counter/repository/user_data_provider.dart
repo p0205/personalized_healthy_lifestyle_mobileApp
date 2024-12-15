@@ -15,18 +15,18 @@ class UserDataProvider {
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
 
-  // static String _getBaseUrl() {
-  //   if (Platform.isAndroid) {
-  //     return "10.0.2.2:8080"; // Android emulator localhost
-  //   } else{
-  //     return "localhost:8080"; // Default for other platforms
-  //   }
-  // }
+  static String _getBaseUrl() {
+    if (Platform.isAndroid) {
+      return "10.0.2.2:8080"; // Android emulator localhost
+    } else{
+      return "localhost:8080"; // Default for other platforms
+    }
+  }
 
   // physical Android devices
-  static String _getBaseUrl() {
-    return "192.168.1.3:8080";
-  }
+  // static String _getBaseUrl() {
+  //   return "192.168.1.3:8080";
+  // }
 
 
 

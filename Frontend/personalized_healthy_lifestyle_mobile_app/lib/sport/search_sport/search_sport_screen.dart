@@ -48,11 +48,7 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
 
   final SearchController _searchController = SearchController();
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -168,7 +164,7 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
               int userId;
               if(userState is LoginSuccess){
                 userId = userState.userId;
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddUserSportScreen(sport: state.selectedSport!, userId: userId, date: widget.date),

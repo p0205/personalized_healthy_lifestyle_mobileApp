@@ -1,5 +1,6 @@
  import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:schedule_generator/calories_counter/models/user_meal.dart';
 import 'package:schedule_generator/calories_counter/repository/meal_repository.dart';
 
 import '../../models/meal.dart';
@@ -115,7 +116,18 @@ class AddUserMealBloc extends Bloc<AddUserMealEvent,AddUserMealState>{
       Emitter<AddUserMealState> emit
       ) async {
       try{
-        await mealRepository.addUserMeal(state.userId, event.mealType, double.parse(state.amountIntakeInGrams!.toStringAsFixed(2)) , double.parse(state.carbsIntake!.toStringAsFixed(2)),  double.parse(state.proteinIntake!.toStringAsFixed(2)),  double.parse(state.fatIntake!.toStringAsFixed(2)),  double.parse(state.energyIntake!.toStringAsFixed(2)), state.mealId);
+        double? carbsIntake;
+        double? proteinIntake;
+        double? fatIntake;
+        double? energyIntake;
+
+        state.carbsIntake != null ? carbsIntake = double.parse(state.carbsIntake!.toStringAsFixed(2)) : null;
+        state.proteinIntake != null ? proteinIntake = double.parse(state.proteinIntake!.toStringAsFixed(2)) : null;
+        state.fatIntake != null ? fatIntake = double.parse(state.fatIntake!.toStringAsFixed(2)) : null;
+        state.energyIntake != null ? energyIntake = double.parse(state.energyIntake!.toStringAsFixed(2)) : null;
+        UserMeal userMeal = UserMeal(mealType: mealType, userId: userId, mealId: state.mealId, amountInGrams:double.parse(state.amountIntakeInGrams!.toStringAsFixed(2)),calories: energyIntake,proteinInGrams: proteinIntake,fatInGrams: fatIntake,carbsInGrams: carbsIntake);
+
+        await mealRepository.addUserMeal(userMeal);
         emit(state.copyWith(status: AddUserMealStatus.mealAdded));
       }catch(e){
         emit(state.copyWith(status: AddUserMealStatus.failure, message: e.toString()));

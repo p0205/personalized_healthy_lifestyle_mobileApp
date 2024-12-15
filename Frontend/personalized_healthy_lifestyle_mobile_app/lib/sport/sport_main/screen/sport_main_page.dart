@@ -30,6 +30,13 @@ class _SportMainPageState extends State<SportMainPage> {
                   fontSize: 25,
                   fontWeight: FontWeight.bold
               ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                iconSize: 30.0,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
             body: SingleChildScrollView(
               child: Padding(
@@ -118,7 +125,7 @@ class _SportMainPageState extends State<SportMainPage> {
                                 ),
                               ),
                               ElevatedButton(onPressed: (){
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => SearchSportScreen(date: summary.date),

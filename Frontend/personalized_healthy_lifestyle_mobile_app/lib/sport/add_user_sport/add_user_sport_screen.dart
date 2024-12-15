@@ -276,9 +276,6 @@ class _toggleButtonState extends State<ToggleButton> {
         final sportMainBloc = context.read<SportMainBloc>();
         sportMainBloc.add(SportAdded());
 
-        sportMainBloc.stream.listen((counterState) {
-          print(counterState.status);
-          if (counterState.status == SportMainStatus.sportAdded) {
             showDialog(
               context: context,
               builder: (context) => Center(
@@ -291,20 +288,14 @@ class _toggleButtonState extends State<ToggleButton> {
                         child: const Text("OK"),
                         onPressed: () {
                           sportMainBloc.add(LoadUserSportList());
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SportMainPage(),
-                            ),
-                          );// Close the dialog
+                          Navigator.popUntil(context, (route) => route.settings.name == "/sportMain");
                         },
                       ),
                     ],
                   )
               ),
             );
-          }
-        });
+
       },
 
       listenWhen: (previous,current){

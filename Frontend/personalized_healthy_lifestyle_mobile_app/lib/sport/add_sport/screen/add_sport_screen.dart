@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/sport/add_sport/screen/sport_type_screen.dart';
-import 'package:schedule_generator/sport/sport_main/blocs/sport_main_bloc.dart';
-import 'package:schedule_generator/sport/sport_main/screen/sport_main_page.dart';
-
 
 import '../blocs/add_sport_bloc.dart';
 
@@ -12,22 +9,17 @@ class AddSportScreen extends StatefulWidget {
   const AddSportScreen({super.key});
 
   @override
-  _AddSportScreenState createState() => _AddSportScreenState();
+  State<AddSportScreen> createState() => _AddSportScreenState();
 }
 
 class _AddSportScreenState extends State<AddSportScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _ = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _caloriesBurntController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
 
-    print("Enter build method in add sport");
-    final bloc = context.read<AddSportBloc>();
-    print(bloc.state.status);
-    print(bloc.state.selectedSportType == null);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -64,9 +56,12 @@ class _AddSportScreenState extends State<AddSportScreen> {
                           labelText: 'Sport Name',
                           border: OutlineInputBorder(),
                         ),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a sport name';
+                          }else if(value.length <= 3){
+                            return 'Sport name must longer than 3 characters';
                           }
                           return null;
                         },
@@ -142,14 +137,8 @@ class _AddSportScreenState extends State<AddSportScreen> {
                           ElevatedButton(
                             child: const Text("OK"),
                             onPressed: () {
-                              final mainBloc = context.read<SportMainBloc>();
-                              mainBloc.add(LoadUserSportList());
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SportMainPage(),
-                                ),
-                              );// Close the dialog
+                              Navigator.popUntil(context, (route) => route.settings.name == "/sportMain");
+                              // Close the dialog
                             },
                           ),
                         ],
@@ -172,8 +161,6 @@ class _AddSportScreenState extends State<AddSportScreen> {
 
             },
             listenWhen: (previous,current){
-              print("Listen when");
-              print(current.status);
               return (current.status == AddSportStatus.sportAdded ||current.status == AddSportStatus.sportTypeListSelected  );
             },
           ),
@@ -195,7 +182,6 @@ class _AddSportScreenState extends State<AddSportScreen> {
   Widget _buildInput(String label, TextEditingController controller) {
     return TextFormField(
       controller: controller,
-
       decoration: InputDecoration(
         labelStyle: const TextStyle(
             fontSize: 15,
@@ -206,20 +192,7 @@ class _AddSportScreenState extends State<AddSportScreen> {
       ),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a value';
-        }
-        return null;
-      },
-      // onChanged: (_) => setState(() {}),
     );
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _caloriesBurntController.dispose();
-    super.dispose();
-  }
 }

@@ -1,5 +1,4 @@
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_bloc.dart';
@@ -7,7 +6,6 @@ import 'package:schedule_generator/user/blocs/user_bloc.dart';
 import '../../../common_widgets/donut_chart.dart';
 import '../../../user/blocs/user_state.dart';
 import '../../calories_counter_main/blocs/calories_counter_main_bloc.dart';
-import '../../calories_counter_main/screen/calories_counter_main.dart';
 import '../../models/meal.dart';
 import '../blocs/add_meal_bloc.dart';
 
@@ -42,6 +40,13 @@ class FoodDetailsPage extends StatelessWidget{
         appBar: AppBar(
           title: const Text('Add Food'),
           backgroundColor: Colors.blueAccent,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            iconSize: 30.0,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -235,6 +240,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                 final userMealState = model.state;
 
                 if (userState is LoginSuccess) {
+
                   model.add(
                       AddMealBtnClicked(
                       mealType: widget.mealType.toUpperCase(),
@@ -259,11 +265,11 @@ class _ToggleButtonState extends State<ToggleButton> {
                 final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
                 caloriesCounterBloc.add(ReloadMealList());
                 // Listen to CaloriesCounterMainBloc state changes
-               caloriesCounterBloc.stream.listen((counterState) {
-                 if (counterState.status == CaloriesCounterMainStatus.mealListReloaded) {
+
+
                    showDialog(
                      context: context,
-                     builder: (context) => Center(
+                     builder: (BuildContext dialogContext) => Center(
                        child: AlertDialog(
                          content: const Text(
                              "Meal is added."),
@@ -272,14 +278,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                             ElevatedButton(
                              child: const Text("OK"),
                              onPressed: () {
-                               Navigator.pushReplacement(
-                                 context,
-                                 MaterialPageRoute(
-                                   builder: (context) => const CaloriesCounterMainScreen(
-
-                                   ),
-                                 )
-                               );// Close the dialog
+                               Navigator.popUntil(context, (route) => route.settings.name == "/mealMain");
                              },
                            ),
                          ],
@@ -287,8 +286,6 @@ class _ToggleButtonState extends State<ToggleButton> {
                      ),
                    );
 
-                 }
-               });
            },
 
       listenWhen: (previous,current){

@@ -32,12 +32,20 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                     fontSize: 25,
                     fontWeight: FontWeight.bold
                 ),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  iconSize: 30.0,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
               body: SingleChildScrollView(
                 child: BlocBuilder<CaloriesCounterMainBloc,CaloriesCounterMainState>(
                   builder: (BuildContext context, CaloriesCounterMainState state) {
-                  final Map<String, List<UserMeal>?>? mealList = state.mealList;
-                  final MealSummary summary = state.summary!;
+
+                  final Map<String, List<UserMeal>?>? mealList = context.read<CaloriesCounterMainBloc>().state.mealList;
+                  final MealSummary summary = context.read<CaloriesCounterMainBloc>().state.summary!;
 
                   return  Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -81,80 +89,12 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                     ),
                   );
                   },
-                  buildWhen:(context,state) {
-                    return (state.status == CaloriesCounterMainStatus.mealDeleted);
-                  } ,
+
                 )
               )
           );
   }
 }
-
-// class CaloriesCounterPage extends StatefulWidget{
-//   late final Map<String, List<UserMeal>?>? mealList;
-//   late final double? caloriesLeft;
-//   @override
-//   State<CaloriesCounterPage> createState() => _CaloriesCounterPageState();
-// }
-//
-// class _CaloriesCounterPageState extends State<CaloriesCounterPage> {
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Calories Counter"),
-//         backgroundColor: Colors.blueAccent,
-//         titleTextStyle: const TextStyle(
-//             fontFamily: 'Itim',
-//             fontSize: 25,
-//             fontWeight: FontWeight.bold
-//         ),
-//       ),
-//       body: BlocConsumer<CaloriesCounterMainBloc,CaloriesCounterMainState>(
-//         builder: (context,state){
-//           if(state.isLoading) {
-//             return const CircularProgressIndicator();
-//           }
-//           if(state.isMealListLoaded){
-//             widget.caloriesLeft = state.caloriesLeft;
-//             widget.mealList = state.mealList;
-//             return SingleChildScrollView(
-//               child: Padding(
-//                 padding: const EdgeInsets.all(8.0),
-//                 child: Column(
-//                   children: [
-//                     CaloriesChart(calories: 500),
-//                     const SizedBox(height: 10),
-//                     ListView.builder(
-//                         shrinkWrap: true,
-//                         physics: const NeverScrollableScrollPhysics(),
-//                         itemCount: widget.mealList?.keys.length ?? 0,
-//                         itemBuilder: (context,index){
-//                           final String mealType = widget.mealList?.keys.elementAt(index) ?? "";
-//                           List<UserMeal>? meals = widget.mealList?[mealType];// key at this index
-//                           return FoodIntakeCard(
-//                             section: mealType, // For each mealType, has one FoodIntake card
-//                             meals: meals!,
-//                           );
-//
-//                         }),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           }
-//           print(state.status);
-//         return const Center(
-//           child: Text("No Record Today"),
-//         );
-//       }, listener: (BuildContext context, CaloriesCounterMainState state) {  } ,
-//
-//       ),
-//     );
-//   }
-// }
-//
 
 
 class CaloriesChart extends StatelessWidget {
@@ -253,7 +193,7 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                   ),
                   onPressed: () {
                     final String mealType = widget.section;
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SearchPage(mealType: mealType)),
                     );
@@ -304,7 +244,7 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                                             child: const Text("OK"),
                                             onPressed: () {
                                               final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
-                                              caloriesCounterBloc.add(DeleteMealBtnClicked(userMealId: meal.id));
+                                              caloriesCounterBloc.add(DeleteMealBtnClicked(userMealId: meal.id!));
                                               Navigator.pop(context);
                                             },
                                           ),

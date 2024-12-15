@@ -29,11 +29,13 @@ class MealApiRepository{
     return await mealApiProvider.getUserMealListByDate(userId, date);
   }
 
-  Future<void> addUserMeal (int userId, String mealType, double amountInGrams,double carbsInGrams, double proteinInGrams, double fatInGrams, double calories, int mealId) async {
-    await mealApiProvider.addUserMeal(userId, mealType,  amountInGrams, carbsInGrams,  proteinInGrams,  fatInGrams,  calories,  mealId);
+  Future<void> addUserMeal (UserMeal userMeal) async {
+    print("repo");
+    await mealApiProvider.addUserMeal(userMeal);
   }
 
   Future<MealSummary> getNutritionalSummary(int userId,DateTime date) async {
+
     return await mealApiProvider.getNutritionalSummary(userId, date);
   }
 

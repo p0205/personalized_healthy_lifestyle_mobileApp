@@ -47,7 +47,6 @@ class AddMealBtnClicked extends AddUserMealEvent{
         required this.proteinInGrams,
         required this.fatInGrams,
         required this.calories,
-
       }
       );
   @override

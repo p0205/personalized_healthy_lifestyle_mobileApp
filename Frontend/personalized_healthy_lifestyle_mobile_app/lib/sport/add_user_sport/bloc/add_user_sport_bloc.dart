@@ -86,7 +86,6 @@ class AddUserSportBloc extends Bloc<AddUserSportEvent,AddUserSportState>{
       Emitter<AddUserSportState> emit
       ) async {
     try{
-      print("onAddMeal blocs");
       await sportRepository.addUserSport(userId, sport.id!, state.durationInHours!, state.caloriesBurnt!);
       emit(state.copyWith(status: AddUserSportStatus.userSportAdded));
     }catch(e){

@@ -16,20 +16,14 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => MealApiRepository(),
-      child: BlocProvider(
-        create: (context) => SearchFoodBloc(),
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Add Food'),
-            backgroundColor: Colors.blueAccent,
-          ),
-          body: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: DebouncedSearchBar(mealType: mealType),
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Food'),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: DebouncedSearchBar(mealType: mealType),
       ),
     );
   }
@@ -44,12 +38,6 @@ class DebouncedSearchBar extends StatefulWidget {
 }
 class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
   final SearchController _searchController = SearchController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +145,7 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
                 int userId;
                 if (userState is LoginSuccess) {
                   userId = userState.userId;
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => FoodDetailsPage(
@@ -170,7 +158,7 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
                 }
               }
               else if(state.status == SearchFoodStatus.addNewMealSelected){
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
