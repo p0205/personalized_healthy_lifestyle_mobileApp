@@ -38,6 +38,7 @@ dependencies:
   json_annotation: ^4.9.0
   flutter_bloc: ^7.0.0
   equatable: ^2.0.0
+  azlistview: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
