@@ -25,15 +25,9 @@ class _AddSportScreenState extends State<AddSportScreen> {
         backgroundColor: Colors.blue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.popUntil(context, (route) => route.settings.name == "/sportMain")
         ),
         title: const Text('Add New Sport', style: TextStyle(color: Colors.white)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -114,8 +108,14 @@ class _AddSportScreenState extends State<AddSportScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ), onPressed: () {
-                      final bloc = context.read<AddSportBloc>();
-                      bloc.add(AddSportBtnSelectedEvent(name: _nameController.text, caloriesBurnt: double.parse(_caloriesBurntController.text)));
+                      if (_formKey.currentState!.validate() && _nameController.text.isNotEmpty && _caloriesBurntController.text.isNotEmpty) {
+                        final bloc = context.read<AddSportBloc>();
+                        bloc.add(AddSportBtnSelectedEvent(name: _nameController.text, caloriesBurnt: double.parse(_caloriesBurntController.text)));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill all required fields')),
+                        );
+                      }
                     },
                       // onPressed: _submitForm,
                       child: const Text('Add New Sport'),
@@ -128,6 +128,7 @@ class _AddSportScreenState extends State<AddSportScreen> {
               if(state.status == AddSportStatus.sportAdded){
                 showDialog(
                   context: context,
+                  barrierDismissible: false,
                   builder: (context) => Center(
                       child: AlertDialog(
                         content: const Text(

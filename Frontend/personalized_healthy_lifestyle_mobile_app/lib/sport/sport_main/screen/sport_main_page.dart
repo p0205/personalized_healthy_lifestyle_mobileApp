@@ -291,13 +291,17 @@ class _SportCardState extends State<SportCard> {
                         onPressed: () {
                           showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (context) => Center(
                                 child: AlertDialog(
                                   content: const Text(
-                                      "Confirm to delete This Sport? "),
+                                      "Confirm to delete This Sport? ",
+                                    textAlign: TextAlign.center,
+                                  ),
                                   actions: <Widget>[
                                     // usually buttons at the bottom of the dialog
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
                                           child: const Text("OK"),

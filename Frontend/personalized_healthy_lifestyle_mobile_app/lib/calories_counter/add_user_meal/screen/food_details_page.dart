@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_bloc.dart';
 
@@ -181,7 +182,9 @@ class _ToggleButtonState extends State<ToggleButton> {
                 }
               },
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              controller: _controller, // Attach the controller to the TextField
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
@@ -265,10 +268,9 @@ class _ToggleButtonState extends State<ToggleButton> {
                 final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
                 caloriesCounterBloc.add(ReloadMealList());
                 // Listen to CaloriesCounterMainBloc state changes
-
-
                    showDialog(
                      context: context,
+                     barrierDismissible: false,
                      builder: (BuildContext dialogContext) => Center(
                        child: AlertDialog(
                          content: const Text(
@@ -339,7 +341,7 @@ class _NutrientCardGroupState extends State<NutrientCardGroup> {
     return BlocBuilder<AddUserMealBloc,AddUserMealState>(
       builder: (context, state) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 2.0),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

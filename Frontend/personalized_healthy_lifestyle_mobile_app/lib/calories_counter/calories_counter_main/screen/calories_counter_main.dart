@@ -232,13 +232,17 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
 
                             showDialog(
                               context: context,
+                              barrierDismissible: false,
                               builder: (context) => Center(
                                   child: AlertDialog(
                                     content: const Text(
-                                        "Confirm to delete This Meal? "),
+                                        "Confirm to delete This Meal? ",
+                                      textAlign: TextAlign.center,
+                                    ),
                                     actions: <Widget>[
                                       // usually buttons at the bottom of the dialog
                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           ElevatedButton(
                                             child: const Text("OK"),
@@ -248,6 +252,7 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                                               Navigator.pop(context);
                                             },
                                           ),
+                                          const SizedBox(width: 8),
                                           ElevatedButton(
                                             child: const Text("CANCEL"),
                                             onPressed: () {

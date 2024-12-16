@@ -278,10 +278,12 @@ class _toggleButtonState extends State<ToggleButton> {
 
             showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (context) => Center(
                   child: AlertDialog(
                     content: const Text(
                         "Sport is added."),
+
                     actions: <Widget>[
                       // usually buttons at the bottom of the dialog
                       ElevatedButton(

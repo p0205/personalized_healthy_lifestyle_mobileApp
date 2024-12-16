@@ -108,14 +108,20 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ), onPressed: () {
-                      final bloc = context.read<AddMealBloc>();
-                      bloc.add(AddMealBtnSelectedEvent(
-                          mealNameInputString: _nameController.text,
-                          unitWeightInputString: _unitWeightController.text,
-                          energyInputString: _energyController.text,
-                          carbsInputString: _carbsController.text,
-                          proteinInputString: _proteinController.text,
-                          fatInputString: _fatController.text));
+                      if (_formKey.currentState!.validate() && _nameController.text.isNotEmpty) {
+                        final bloc = context.read<AddMealBloc>();
+                        bloc.add(AddMealBtnSelectedEvent(
+                            mealNameInputString: _nameController.text,
+                            unitWeightInputString: _unitWeightController.text,
+                            energyInputString: _energyController.text,
+                            carbsInputString: _carbsController.text,
+                            proteinInputString: _proteinController.text,
+                            fatInputString: _fatController.text));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill all required fields')),
+                        );
+                      }
                     },
                       // onPressed: _submitForm,
                       child: const Text('Add New Meal'),
@@ -128,6 +134,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
             listener: (BuildContext context, AddMealState state) {
               showDialog(
                 context: context,
+                barrierDismissible: false,
                 builder: (context) => Center(
                     child: AlertDialog(
                       content: const Text(
@@ -178,7 +185,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
               onTap: () {
                 bloc.add(Per100SelectedEvent());
               },
-                  // setState(() => _measurementType = 'per100g'),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
@@ -232,8 +238,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
       ),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-
-      // onChanged: (_) => setState(() {}),
     );
   }
 
