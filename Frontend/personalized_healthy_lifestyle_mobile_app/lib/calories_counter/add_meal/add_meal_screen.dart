@@ -6,8 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/review_nutrition_screen.dart';
 
-import '../upload_nutrition_table_file/blocs/upload_nutrition_table_bloc.dart';
-import '../upload_nutrition_table_file/upload_nutrition_table_file_screen.dart';
 
 class AddMealScreen extends StatefulWidget {
 

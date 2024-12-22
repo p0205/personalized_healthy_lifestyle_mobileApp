@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/add_meal_screen.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
-import 'package:schedule_generator/calories_counter/upload_nutrition_table_file/blocs/upload_nutrition_table_bloc.dart';
-import 'package:schedule_generator/calories_counter/upload_nutrition_table_file/upload_nutrition_table_file_screen.dart';
 import 'package:schedule_generator/user/blocs/user_state.dart';
 
 import '../../../user/blocs/user_bloc.dart';
