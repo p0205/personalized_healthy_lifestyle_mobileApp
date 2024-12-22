@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/add_meal_screen.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
+import 'package:schedule_generator/calories_counter/upload_nutrition_table_file/blocs/upload_nutrition_table_bloc.dart';
+import 'package:schedule_generator/calories_counter/upload_nutrition_table_file/upload_nutrition_table_file_screen.dart';
 import 'package:schedule_generator/user/blocs/user_state.dart';
 
 import '../../../user/blocs/user_bloc.dart';
@@ -30,7 +32,7 @@ class SearchPage extends StatelessWidget {
 }
 
 class DebouncedSearchBar extends StatefulWidget {
-  const DebouncedSearchBar({required this.mealType});
+  const DebouncedSearchBar({super.key, required this.mealType});
   final String mealType;
 
   @override
@@ -162,10 +164,14 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return BlocProvider(
-                        create: (context) => AddMealBloc(),
-                        child: const AddMealScreen(),
-                      );
+                      return MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create: (context) => AddMealBloc()),
+                            BlocProvider(
+                              create: (context) => UploadNutritionTableBloc()),
+                          ],
+                      child: const AddMealScreen());
                     },
                   ),
                 );

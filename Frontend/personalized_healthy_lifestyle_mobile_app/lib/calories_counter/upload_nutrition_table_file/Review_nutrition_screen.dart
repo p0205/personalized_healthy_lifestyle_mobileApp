@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
 
-import '../upload_nutrition_table_file/blocs/upload_nutrition_table_bloc.dart';
-import '../upload_nutrition_table_file/upload_nutrition_table_file_screen.dart';
 
 class AddMealScreen extends StatefulWidget {
 
@@ -16,6 +14,8 @@ class AddMealScreen extends StatefulWidget {
 }
 
 class _AddMealScreenState extends State<AddMealScreen> {
+  // get the meal info from bloc
+   bool isEditable = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _unitWeightController = TextEditingController();
@@ -35,7 +35,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
 
-        title: const Text('Add New Meal', style: TextStyle(color: Colors.white)),
+        title: const Text('Review Meal Info', style: TextStyle(color: Colors.white)),
+          actions:
+          [
+          IconButton(
+            icon: Icon(isEditable ? Icons.check : Icons.edit, color: Colors.white),
+            onPressed: () {isEditable = !isEditable;}),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -44,18 +50,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
             builder: (context, state) {
               return Column(
                 children: [
-                  _buildUploadNutritionTable(),
-                  TextButton(
-                    onPressed: _showImageUploadInfo,
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.info_outline, size: 16),
-                        SizedBox(width: 2),
-                        Text('How it works', style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
                   const SizedBox(width: 10),
                   Form(
                     key: _formKey,
@@ -65,6 +59,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                         _buildCard(
                           child: TextFormField(
                             controller: _nameController,
+                            enabled: isEditable,
+                            initialValue: state.meal?.name,
                             decoration: const InputDecoration(
                               labelText: 'Meal Name',
                               border: OutlineInputBorder(),
@@ -90,6 +86,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                                 const SizedBox(height: 16),
                                 TextFormField(
                                   controller: _unitWeightController,
+                                  initialValue: state.meal?.unitWeight.toString(),
+                                  enabled: isEditable,
                                   decoration: const InputDecoration(
                                     labelText: 'Unit Weight (g)',
                                     border: OutlineInputBorder(),
@@ -109,16 +107,54 @@ class _AddMealScreenState extends State<AddMealScreen> {
                                 ),
                               ],
                               const SizedBox(height: 16),
-                              _buildNutritionInput(
-                                  'Energy (kcal)', _energyController),
-                              const SizedBox(height: 16),
-                              _buildNutritionInput(
-                                  'Carbohydrates (g)', _carbsController),
-                              const SizedBox(height: 16),
-                              _buildNutritionInput(
-                                  'Protein (g)', _proteinController),
-                              const SizedBox(height: 16),
-                              _buildNutritionInput('Fat (g)', _fatController),
+                              TextFormField(
+                                controller: _energyController,
+                                enabled: isEditable,
+                                initialValue: context.read<AddMealBloc>().state.meal?.energyPer100g.toString(),
+                                decoration: const InputDecoration(
+                                  labelText: 'Energy (kcal)',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
+                              ),
+
+                              TextFormField(
+                                controller: _carbsController,
+                                enabled: isEditable,
+                                initialValue: context.read<AddMealBloc>().state.meal?.carbsPer100g.toString(),
+                                decoration: const InputDecoration(
+                                  labelText: 'Carbohydrates (g)',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
+                              ),
+
+                              TextFormField(
+                                controller: _proteinController,
+                                enabled: isEditable,
+                                initialValue: context.read<AddMealBloc>().state.meal?.proteinPer100g.toString(),
+                                decoration: const InputDecoration(
+                                  labelText: 'Protein (g)',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
+                              ),
+
+                              TextFormField(
+                                controller: _fatController,
+                                enabled: isEditable,
+                                initialValue: context.read<AddMealBloc>().state.meal?.fatPer100g.toString(),
+                                decoration: const InputDecoration(
+                                  labelText: 'Fat (g)',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
+                              ),
+
                             ],
                           ),
                         ),
@@ -144,12 +180,12 @@ class _AddMealScreenState extends State<AddMealScreen> {
                           }
                         },
                           // onPressed: _submitForm,
-                          child: const Text('Add New Meal'),
+                          child: const Text('Confirm and Add Meal'),
                         ),
                       ],
                     ),
                   ),
-              ],
+                ],
               );
             },
 
@@ -251,87 +287,5 @@ class _AddMealScreenState extends State<AddMealScreen> {
     );
   }
 
-  Widget _buildUploadNutritionTable(){
-    return DottedBorder(
-      borderType: BorderType.RRect,
-        radius: const Radius.circular(20),
-        dashPattern: const [10,10],
-        color: Colors.grey,
-        strokeWidth: 2,
-        child: InkWell(
-          onTap: (){
-            context.read<UploadNutritionTableBloc>().add(UploadFileEvent());
-          },
-          child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(20), // Circular edges
-                  ),
-            child: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.camera_alt, color: Colors.blue, size: 32),
-                 SizedBox(height: 8),
-                 Text(
-                  'Upload Nutrition Table',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                 SizedBox(height: 4),
-                 Text(
-                  'Quick fill meal details',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-              ),),
-        )
-    );
-  }
-
-  Widget _buildNutritionInput(String label, TextEditingController controller) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-    );
-  }
-
-  void _showImageUploadInfo() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: const Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('How to Use Image Upload', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              Text(
-                    '1. Tap the "Upload Nutrition Table" button.\n'
-                    '2. Upload a clear photo of the nutrition table.\n'
-                    '3. Our system will automatically extract and fill in the nutritional information for you.\n'
-                    '4. Review and adjust the information if needed.',
-                style: TextStyle(fontSize: 14),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
 }

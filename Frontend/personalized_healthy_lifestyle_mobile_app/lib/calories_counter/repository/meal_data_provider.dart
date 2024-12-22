@@ -2,8 +2,9 @@
 //search specific food return Food
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io' show Platform;
+import 'dart:io' show File, Platform;
 
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
 import 'package:schedule_generator/calories_counter/models/user_meal.dart';
@@ -23,25 +24,29 @@ class MealApiProvider{
 
   final String _baseUrl;
   final http.Client _httpClient;
+  final dio = Dio();
 
   MealApiProvider({http.Client? httpClient})
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
 
-  static String _getBaseUrl() {
-    if (Platform.isAndroid) {
-      return "10.0.2.2:8080"; // Android emulator localhost
-
-    } else {
-      return "localhost:8080";
-    }
-  }
-
-  // // physical Android devices
   // static String _getBaseUrl() {
-  //   return "192.168.1.3:8080";
+  //   if (Platform.isAndroid) {
+  //     return "10.0.2.2:8080"; // Android emulator localhost
+  //
+  //   } else {
+  //     return "localhost:8080";
+  //   }
   // }
 
+  // // physical Android devices
+  static String _getBaseUrl() {
+    return "192.168.1.3:8080";
+  }
+
+  // static String _getBaseUrl() {
+  //   return "10.131.79.55:8080";
+  // }
 
   // api : localhost:8080/meal/search
   Future<List<Meal>> getMatchingMealList(String query) async {
@@ -145,7 +150,35 @@ class MealApiProvider{
     }
   }
 
-
+  Future<Meal?> extractNutrition(File file) async{
+    final uri = Uri.http(_baseUrl,"/image/extract");
+    // var request = http.MultipartRequest("POST",uri);
+    // request.files.add(await http.MultipartFile.fromPath("file",file.path));
+    //
+    // var response = await request.send();
+    // if(response.statusCode == 200){
+    //   //TODO: Upload successfully
+    //   print("Uploaded");
+    // }else{
+    //   //TODO: Handle error
+    // }
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(file.path),
+    });
+    final response = await dio.post(
+        uri.toString(),
+        data: formData,
+        onSendProgress: (int sent, int total) {
+          print('$sent $total');
+      },);
+    if(response.statusCode == 200){
+      //TODO: Upload successfully
+      Meal meal = Meal.fromJson((response.data));
+      return meal;
+    }else{
+      return null;
+    }
+  }
 }
 
 String formatDate(DateTime dateTime){
