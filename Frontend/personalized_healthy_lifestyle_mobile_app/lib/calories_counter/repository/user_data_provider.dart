@@ -24,13 +24,13 @@ class UserDataProvider {
   // }
 
   // physical Android devices
-  static String _getBaseUrl() {
-    return "192.168.1.3:8080";
-  }
-
   // static String _getBaseUrl() {
-  //   return "10.131.79.55:8080";
+  //   return "192.168.1.3:8080";
   // }
+
+  static String _getBaseUrl() {
+    return "192.168.100.30:8080";
+  }
 
 
   //

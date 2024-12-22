@@ -30,5 +30,14 @@ class Per100SelectedEvent extends AddMealEvent {}
 
 class UnitWeightSelectedEvent extends AddMealEvent {}
 
+class UploadFileEvent extends AddMealEvent{}
+
+class ExtractNutriEvent extends AddMealEvent{
+  final File file;
+  final String name;
+  const ExtractNutriEvent({required this.file, required this.name});
+}
+
+class ToggleEditableEvent extends AddMealEvent{}
 
 

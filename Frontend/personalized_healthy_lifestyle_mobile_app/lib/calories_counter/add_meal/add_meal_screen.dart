@@ -1,8 +1,10 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
+import 'package:schedule_generator/calories_counter/add_meal/review_nutrition_screen.dart';
 
 import '../upload_nutrition_table_file/blocs/upload_nutrition_table_bloc.dart';
 import '../upload_nutrition_table_file/upload_nutrition_table_file_screen.dart';
@@ -18,6 +20,7 @@ class AddMealScreen extends StatefulWidget {
 class _AddMealScreenState extends State<AddMealScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nameDialogController = TextEditingController();
   final TextEditingController _unitWeightController = TextEditingController();
   final TextEditingController _energyController = TextEditingController();
   final TextEditingController _carbsController = TextEditingController();
@@ -44,18 +47,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
             builder: (context, state) {
               return Column(
                 children: [
-                  _buildUploadNutritionTable(),
-                  TextButton(
-                    onPressed: _showImageUploadInfo,
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.info_outline, size: 16),
-                        SizedBox(width: 2),
-                        Text('How it works', style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
+                  if(state.status == AddMealStatus.initial || state.status == AddMealStatus.fileUploaded)
+                    _buildUploadNutritionTable(),
                   const SizedBox(width: 10),
                   Form(
                     key: _formKey,
@@ -153,29 +146,56 @@ class _AddMealScreenState extends State<AddMealScreen> {
               );
             },
 
-            listener: (BuildContext context, AddMealState state) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => Center(
-                    child: AlertDialog(
-                      content: const Text(
-                          "New Meal is added."),
-                      actions: <Widget>[
-                        // usually buttons at the bottom of the dialog
-                        ElevatedButton(
-                          child: const Text("OK"),
-                          onPressed: () {
-                            Navigator.popUntil(context, (route) => route.settings.name == "/mealMain");
-                          },
-                        ),
-                      ],
-                    )
-                ),
-              );
+            listener: (context, state) {
+              if(state.status == AddMealStatus.mealAdded){
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => Center(
+                      child: AlertDialog(
+                        content: const Text(
+                            "New Meal is added."),
+                        actions: <Widget>[
+                          // usually buttons at the bottom of the dialog
+                          ElevatedButton(
+                            child: const Text("OK"),
+                            onPressed: () {
+                              Navigator.popUntil(context, (route) => route.settings.name == "/mealMain");
+                            },
+                          ),
+                        ],
+                      )
+                  ),
+                );
+              }
+              if(state.status == AddMealStatus.nutriExtracted){
+                final route = ModalRoute.of(context);
+                final isCurrentRoute = route?.isCurrent ?? false;
+                if (isCurrentRoute) {
+                  final bloc = BlocProvider.of<AddMealBloc>(context);
+                  if(bloc.state.meal?.unitWeight == null){
+                    print("At add meal screen(listener) : per 100");
+                    bloc.add(Per100SelectedEvent());
+                  }else{
+                    print("At add meal screen(listener) : unit weight");
+                    bloc.add(UnitWeightSelectedEvent());
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                        BlocProvider<AddMealBloc>.value(
+                          value: bloc,
+                          child: ReviewNutritionScreen(meal:bloc.state.meal!),
+                        )
+                    ),
+                  );
+                }
+
+              }
             },
             listenWhen: (previous,current){
-              return (current.status == AddMealStatus.mealAdded);
+              return (current.status == AddMealStatus.mealAdded || current.status == AddMealStatus.nutriExtracted);
             },
           ),
         ),
@@ -205,6 +225,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: GestureDetector(
               onTap: () {
+                print("At add meal screen: per 100g");
                 bloc.add(Per100SelectedEvent());
               },
               child: Container(
@@ -227,6 +248,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: GestureDetector(
               onTap: ()  {
+                print("At add meal screen: unit weight");
                 bloc.add(UnitWeightSelectedEvent());
               },
               child: Container(
@@ -251,48 +273,133 @@ class _AddMealScreenState extends State<AddMealScreen> {
     );
   }
 
+
   Widget _buildUploadNutritionTable(){
-    return DottedBorder(
-      borderType: BorderType.RRect,
-        radius: const Radius.circular(20),
-        dashPattern: const [10,10],
-        color: Colors.grey,
-        strokeWidth: 2,
-        child: InkWell(
-          onTap: (){
-            context.read<UploadNutritionTableBloc>().add(UploadFileEvent());
-          },
-          child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(20), // Circular edges
+    final bloc = context.read<AddMealBloc>();
+    return Column(
+      children: [
+        DottedBorder(
+          borderType: BorderType.RRect,
+            radius: const Radius.circular(20),
+            dashPattern: const [10,10],
+            color: Colors.grey,
+            strokeWidth: 2,
+            child:
+
+            bloc.state.status == AddMealStatus.fileUploaded ?
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.check_circle, size: 48, color: Colors.green),
+                  const SizedBox(height: 16),
+                  const Text(
+                      'File Uploaded Successfully',
+                      style: TextStyle(
+                        color: Colors.green,
+                      )
                   ),
-            child: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.camera_alt, color: Colors.blue, size: 32),
-                 SizedBox(height: 8),
-                 Text(
-                  'Upload Nutrition Table',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+
+                          title: const Text('Enter Meal Name'),
+                          content: TextField(
+                            controller: _nameDialogController,
+
+                            decoration: const InputDecoration(
+                              labelText: 'Enter Meal Name',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close dialog without action
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                final mealName = _nameDialogController.text.trim();
+                                if (mealName.isNotEmpty || mealName.length > 3) {
+                                  Navigator.of(context).pop(); // Close dialog
+                                  bloc.add(ExtractNutriEvent(file: bloc.state.file!, name: mealName));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Please enter a meal name which consists of more than 3 characters.')),
+                                  );
+                                }
+                              },
+                              child: const Text('Confirm'),
+                            ),
+                          ],
+                        );
+                      },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+                    child: const Text('Extract Nutrition'),
                   ),
-                ),
-                 SizedBox(height: 4),
-                 Text(
-                  'Quick fill meal details',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
               ],
-              ),),
-        )
+                        ),
+            ) :
+
+            InkWell(
+              onTap: (){
+                context.read<AddMealBloc>().add(UploadFileEvent());
+              },
+              child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(20), // Circular edges
+                      ),
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.camera_alt, color: Colors.blue, size: 32),
+                     SizedBox(height: 8),
+                     Text(
+                      'Upload Nutrition Table',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                     SizedBox(height: 4),
+                     Text(
+                      'Quick fill meal details',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                  ),),
+            )
+        ),
+        TextButton(
+          onPressed: _showImageUploadInfo,
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.info_outline, size: 16),
+              SizedBox(width: 2),
+              Text('How it works', style: TextStyle(fontSize: 12)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

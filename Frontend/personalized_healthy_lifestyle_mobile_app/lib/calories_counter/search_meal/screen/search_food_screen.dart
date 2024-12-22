@@ -164,14 +164,9 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return MultiBlocProvider(
-                          providers: [
-                            BlocProvider(
-                              create: (context) => AddMealBloc()),
-                            BlocProvider(
-                              create: (context) => UploadNutritionTableBloc()),
-                          ],
-                      child: const AddMealScreen());
+                      return BlocProvider(
+                          create: (context) => AddMealBloc(),
+                          child: const AddMealScreen());
                     },
                   ),
                 );

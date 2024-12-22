@@ -3,20 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
+import 'package:schedule_generator/calories_counter/upload_nutrition_table_file/blocs/upload_nutrition_table_bloc.dart';
+
+import '../models/meal.dart';
 
 
-class AddMealScreen extends StatefulWidget {
+class ReviewNutritionScreen extends StatefulWidget {
 
-  const AddMealScreen({super.key});
+  final Meal meal;
+
+
+
+  const ReviewNutritionScreen({super.key, required this.meal});
 
   @override
-  State<AddMealScreen> createState() => _AddMealScreenState();
+  State<ReviewNutritionScreen> createState() => _ReviewNutritionScreenState();
 }
 
-class _AddMealScreenState extends State<AddMealScreen> {
+class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
   // get the meal info from bloc
-   bool isEditable = false;
+
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _unitWeightController = TextEditingController();
   final TextEditingController _energyController = TextEditingController();
@@ -24,9 +32,17 @@ class _AddMealScreenState extends State<AddMealScreen> {
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _fatController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<AddMealBloc>();
+    _nameController.text = widget.meal.name ?? '';
+    _unitWeightController.text = widget.meal.unitWeight?.toString() ?? '';
+    _energyController.text = widget.meal.energyPer100g?.toString() ?? '';
+   _carbsController.text = widget.meal.carbsPer100g?.toString() ?? '';
+    _proteinController.text = widget.meal.proteinPer100g?.toString() ?? '';
+    _fatController.text = widget.meal.fatPer100g?.toString() ?? '';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -34,13 +50,15 @@ class _AddMealScreenState extends State<AddMealScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-
         title: const Text('Review Meal Info', style: TextStyle(color: Colors.white)),
           actions:
           [
           IconButton(
-            icon: Icon(isEditable ? Icons.check : Icons.edit, color: Colors.white),
-            onPressed: () {isEditable = !isEditable;}),
+            icon: Icon(context.read<AddMealBloc>().state.isReviewEditable ? Icons.check : Icons.edit, color: Colors.white),
+            onPressed: () {
+              context.read<AddMealBloc>().add(ToggleEditableEvent());
+            }
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -59,8 +77,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                         _buildCard(
                           child: TextFormField(
                             controller: _nameController,
-                            enabled: isEditable,
-                            initialValue: state.meal?.name,
+                            enabled: context.read<AddMealBloc>().state.isReviewEditable,
                             decoration: const InputDecoration(
                               labelText: 'Meal Name',
                               border: OutlineInputBorder(),
@@ -86,8 +103,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                                 const SizedBox(height: 16),
                                 TextFormField(
                                   controller: _unitWeightController,
-                                  initialValue: state.meal?.unitWeight.toString(),
-                                  enabled: isEditable,
+                                  enabled: context.read<AddMealBloc>().state.isReviewEditable,
                                   decoration: const InputDecoration(
                                     labelText: 'Unit Weight (g)',
                                     border: OutlineInputBorder(),
@@ -107,54 +123,16 @@ class _AddMealScreenState extends State<AddMealScreen> {
                                 ),
                               ],
                               const SizedBox(height: 16),
-                              TextFormField(
-                                controller: _energyController,
-                                enabled: isEditable,
-                                initialValue: context.read<AddMealBloc>().state.meal?.energyPer100g.toString(),
-                                decoration: const InputDecoration(
-                                  labelText: 'Energy (kcal)',
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-                              ),
-
-                              TextFormField(
-                                controller: _carbsController,
-                                enabled: isEditable,
-                                initialValue: context.read<AddMealBloc>().state.meal?.carbsPer100g.toString(),
-                                decoration: const InputDecoration(
-                                  labelText: 'Carbohydrates (g)',
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-                              ),
-
-                              TextFormField(
-                                controller: _proteinController,
-                                enabled: isEditable,
-                                initialValue: context.read<AddMealBloc>().state.meal?.proteinPer100g.toString(),
-                                decoration: const InputDecoration(
-                                  labelText: 'Protein (g)',
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-                              ),
-
-                              TextFormField(
-                                controller: _fatController,
-                                enabled: isEditable,
-                                initialValue: context.read<AddMealBloc>().state.meal?.fatPer100g.toString(),
-                                decoration: const InputDecoration(
-                                  labelText: 'Fat (g)',
-                                  border: OutlineInputBorder(),
-                                ),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
-                              ),
-
+                              _buildNutritionInput(
+                                  'Energy (kcal)', _energyController),
+                              const SizedBox(height: 16),
+                              _buildNutritionInput(
+                                  'Carbohydrates (g)', _carbsController),
+                              const SizedBox(height: 16),
+                              _buildNutritionInput(
+                                  'Protein (g)', _proteinController),
+                              const SizedBox(height: 16),
+                              _buildNutritionInput('Fat (g)', _fatController),
                             ],
                           ),
                         ),
@@ -241,7 +219,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: GestureDetector(
               onTap: () {
+                final bloc = context.read<AddMealBloc>();
+                print("At review screen : per 100g");
                 bloc.add(Per100SelectedEvent());
+                print("At review screen : per 100 g bloc.state.isUnitWeightSelected");
+                print(bloc.state.isUnitWeightSelected);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -251,6 +233,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 ),
                 child: Text(
                   'Per 100g',
+
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: !bloc.state.isUnitWeightSelected ? Colors.blue : Colors.grey[600],
@@ -263,7 +246,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: GestureDetector(
               onTap: ()  {
+                final bloc = context.read<AddMealBloc>();
+                print("At review screen : select unit weight");
                 bloc.add(UnitWeightSelectedEvent());
+                print("At review screen : unit weight bloc.state.isUnitWeightSelected");
+                print(bloc.state.isUnitWeightSelected);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -286,6 +273,19 @@ class _AddMealScreenState extends State<AddMealScreen> {
       ),
     );
   }
+
+   Widget _buildNutritionInput(String label, TextEditingController controller) {
+     return TextFormField(
+       controller: controller,
+       enabled: context.read<AddMealBloc>().state.isReviewEditable,
+       decoration: InputDecoration(
+         labelText: label,
+         border: const OutlineInputBorder(),
+       ),
+       keyboardType: TextInputType.number,
+       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
+     );
+   }
 
 
 }

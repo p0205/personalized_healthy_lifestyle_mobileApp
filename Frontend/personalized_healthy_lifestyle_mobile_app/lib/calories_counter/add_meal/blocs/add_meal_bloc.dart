@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/meal.dart';
@@ -15,13 +18,22 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
     on<Per100SelectedEvent>(_per100SelectedEvent);
     on<UnitWeightSelectedEvent>(_unitWeightSelectedEvent);
     on<AddMealBtnSelectedEvent>(_addMealBtnSelectedEvent);
+    on<UploadFileEvent>(_uploadFile);
+    on<ExtractNutriEvent>(_extractNutri);
+    on<ToggleEditableEvent>(_toggleEditable);
+
+  }
+  Future<void> _toggleEditable(ToggleEditableEvent event, Emitter<AddMealState> emit) async {
+    emit(state.copyWith(isReviewEditable: !state.isReviewEditable));
   }
 
   Future<void> _per100SelectedEvent(Per100SelectedEvent event, Emitter<AddMealState> emit) async {
+    print("Enter 100 event");
     emit(state.copyWith(isUnitWeightSelected: false));
   }
 
   Future<void> _unitWeightSelectedEvent(UnitWeightSelectedEvent event, Emitter<AddMealState> emit) async {
+    print("weight event");
     emit(state.copyWith(isUnitWeightSelected: true));
   }
 
@@ -65,7 +77,41 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
     }
   }
 
-  // Future<void> _searchMatchingFood(
+  Future<void> _extractNutri (
+      ExtractNutriEvent event,
+      Emitter<AddMealState> emit
+      )async{
+    emit(state.copyWith(status: AddMealStatus.loading));
+    try{
+      Meal? meal = await mealRepository.extractNutrition(event.file);
+      meal!.name = event.name;
+      emit(state.copyWith(status: AddMealStatus.nutriExtracted, meal: meal));
+    }catch(e){
+      emit(state.copyWith(status: AddMealStatus.failure,message: e.toString()));
+    }
+  }
+
+  Future<void> _uploadFile (
+      UploadFileEvent event,
+      Emitter<AddMealState> emit
+      )async{
+    try{
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        // allowedExtensions: ['jpg', 'jpeg', 'png'],
+      );
+      if (result != null) {
+        final file = File(result.files.single.path!);
+        emit(state.copyWith(status: AddMealStatus.fileUploaded, file: file));
+      } else {
+        emit(state.copyWith(status: AddMealStatus.failure,message:"No file selected"));
+      }
+    }catch(e){
+      emit(state.copyWith(status: AddMealStatus.failure,message: e.toString()));
+    }
+  }
+
+// Future<void> _searchMatchingFood(
   //     SearchQueryChanged event,
   //     Emitter<SearchFoodState> emit
   //     ) async {

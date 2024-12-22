@@ -1,9 +1,14 @@
 part of 'add_meal_bloc.dart';
 
 enum AddMealStatus {
+  initial,
   loading,
   failure,
-  mealAdded
+  mealAdded,
+  fileUploaded,
+  extractNutriSelected,
+  nutriExtracted,
+  noTableDetected,
 }
 
 
@@ -13,26 +18,30 @@ class AddMealState extends Equatable{
   final AddMealStatus status;
   final String? message;
   final bool isUnitWeightSelected;
+  final File? file;
+  final bool isReviewEditable;
 
 
   const AddMealState({
-    this.status = AddMealStatus.loading,
+    this.status = AddMealStatus.initial,
     this.meal,
     this.message,
     this.isUnitWeightSelected = false,
-
+    this.file,
+    this.isReviewEditable = false
   });
 
 
   @override
-  List<Object?> get props => [status,meal,isUnitWeightSelected];
+  List<Object?> get props => [status,meal,isUnitWeightSelected,file,isReviewEditable];
 
   AddMealState copyWith ({
     Meal? meal,
     AddMealStatus? status,
     String? message,
     bool? isUnitWeightSelected,
-
+    File? file,
+    bool? isReviewEditable
   })
   {
     return AddMealState(
@@ -40,7 +49,8 @@ class AddMealState extends Equatable{
         meal: meal ?? this.meal,
         message:  message ?? this.message,
         isUnitWeightSelected: isUnitWeightSelected?? this.isUnitWeightSelected,
-
+        file: file ?? this.file,
+        isReviewEditable: isReviewEditable ?? this.isReviewEditable,
     );
   }
 }

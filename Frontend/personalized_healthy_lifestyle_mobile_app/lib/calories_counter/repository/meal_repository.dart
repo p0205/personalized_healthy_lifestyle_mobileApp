@@ -45,6 +45,7 @@ class MealApiRepository{
   }
 
   Future<Meal?> extractNutrition(File file) async{
+
     return await mealApiProvider.extractNutrition(file);
   }
 }

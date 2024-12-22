@@ -35,4 +35,5 @@ class Meal{
     return jsonArray.map((json) => Meal.fromJson(json)).toList();
   }
 
+
 }
