@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/blocs/add_meal_bloc.dart';
 import 'package:schedule_generator/calories_counter/add_meal/review_nutrition_screen.dart';
+import 'package:schedule_generator/common_widgets/loading_overlay.dart';
 
 
 class AddMealScreen extends StatefulWidget {
@@ -45,7 +46,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
             builder: (context, state) {
               return Column(
                 children: [
-                  if(state.status == AddMealStatus.initial || state.status == AddMealStatus.fileUploaded)
+                  if(state.status == AddMealStatus.initial|| state.status == AddMealStatus.fileUploaded)
                     _buildUploadNutritionTable(),
                   const SizedBox(width: 10),
                   Form(
@@ -143,8 +144,18 @@ class _AddMealScreenState extends State<AddMealScreen> {
               ],
               );
             },
-
+            buildWhen: (context,state){
+              return (state.status!=AddMealStatus.nutriExtracted && state.status != AddMealStatus.loading);
+            },
             listener: (context, state) {
+              if(state.status == AddMealStatus.loading){
+                LoadingOverlay.show(context);
+              }else if (state.status != AddMealStatus.loading) {
+                // Dismiss the loading overlay when the status changes from loading
+                Navigator.of(context, rootNavigator: true).pop();
+              }
+
+
               if(state.status == AddMealStatus.mealAdded){
                 showDialog(
                   context: context,
@@ -166,18 +177,28 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   ),
                 );
               }
+
+
               if(state.status == AddMealStatus.nutriExtracted){
+
+                print("Enter listener builder!!!!!!!!!");
                 final route = ModalRoute.of(context);
+                print("final route = ModalRoute.of(context);");
                 final isCurrentRoute = route?.isCurrent ?? false;
+                print("final isCurrentRoute = route?.isCurrent ?? false;");
+                print(isCurrentRoute);
                 if (isCurrentRoute) {
                   final bloc = BlocProvider.of<AddMealBloc>(context);
+                  print("final bloc = BlocProvider.of<AddMealBloc>(context);");
+                  print(isCurrentRoute);
                   if(bloc.state.meal?.unitWeight == null){
-                    print("At add meal screen(listener) : per 100");
                     bloc.add(Per100SelectedEvent());
                   }else{
-                    print("At add meal screen(listener) : unit weight");
                     bloc.add(UnitWeightSelectedEvent());
                   }
+
+                  print(" if (isCurrentRoute) {");
+                  print("Enter nagivation!!!!!");
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -191,9 +212,12 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 }
 
               }
+
             },
             listenWhen: (previous,current){
-              return (current.status == AddMealStatus.mealAdded || current.status == AddMealStatus.nutriExtracted);
+              print("Listener: ");
+              print(current.status);
+              return (current.status == AddMealStatus.mealAdded || current.status == AddMealStatus.nutriExtracted || current.status == AddMealStatus.loading);
             },
           ),
         ),
@@ -223,7 +247,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                print("At add meal screen: per 100g");
                 bloc.add(Per100SelectedEvent());
               },
               child: Container(
@@ -246,7 +269,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Expanded(
             child: GestureDetector(
               onTap: ()  {
-                print("At add meal screen: unit weight");
                 bloc.add(UnitWeightSelectedEvent());
               },
               child: Container(
@@ -284,7 +306,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
             strokeWidth: 2,
             child:
 
-            bloc.state.status == AddMealStatus.fileUploaded ?
+            (bloc.state.status == AddMealStatus.fileUploaded || bloc.state.status == AddMealStatus.nutriExtracted) ?
             Container(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               width: double.infinity,

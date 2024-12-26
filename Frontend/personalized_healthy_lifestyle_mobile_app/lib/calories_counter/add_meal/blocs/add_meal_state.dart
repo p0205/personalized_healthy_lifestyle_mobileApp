@@ -8,6 +8,7 @@ enum AddMealStatus {
   fileUploaded,
   extractNutriSelected,
   nutriExtracted,
+  reviewInfoLoaded,
   noTableDetected,
 }
 

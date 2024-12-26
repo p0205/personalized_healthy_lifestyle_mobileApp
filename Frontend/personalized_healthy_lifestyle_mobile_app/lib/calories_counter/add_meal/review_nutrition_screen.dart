@@ -31,16 +31,21 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
   final TextEditingController _proteinController = TextEditingController();
   final TextEditingController _fatController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.meal.name ?? '';
+    _unitWeightController.text = widget.meal.unitWeight?.toString() ?? '';
+    _energyController.text = widget.meal.energyPer100g?.toString() ?? '';
+    _carbsController.text = widget.meal.carbsPer100g?.toString() ?? '';
+    _proteinController.text = widget.meal.proteinPer100g?.toString() ?? '';
+    _fatController.text = widget.meal.fatPer100g?.toString() ?? '';
+    context.read<AddMealBloc>().add(ReviewPageLoadedEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<AddMealBloc>();
-    _nameController.text = widget.meal.name ?? '';
-    _unitWeightController.text = widget.meal.unitWeight?.toString() ?? '';
-    _energyController.text = widget.meal.energyPer100g?.toString() ?? '';
-   _carbsController.text = widget.meal.carbsPer100g?.toString() ?? '';
-    _proteinController.text = widget.meal.proteinPer100g?.toString() ?? '';
-    _fatController.text = widget.meal.fatPer100g?.toString() ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -65,6 +70,7 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
           padding: const EdgeInsets.all(16.0),
           child: BlocConsumer<AddMealBloc,AddMealState>(
             builder: (context, state) {
+              if(state.status == AddMealStatus.reviewInfoLoaded){
               return Column(
                 children: [
                   const SizedBox(width: 10),
@@ -164,6 +170,8 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
                   ),
                 ],
               );
+              }
+              return const Center(child: CircularProgressIndicator());
             },
 
             listener: (BuildContext context, AddMealState state) {
@@ -285,6 +293,4 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
      );
    }
-
-
 }

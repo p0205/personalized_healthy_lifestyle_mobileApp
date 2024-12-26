@@ -21,8 +21,12 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
     on<UploadFileEvent>(_uploadFile);
     on<ExtractNutriEvent>(_extractNutri);
     on<ToggleEditableEvent>(_toggleEditable);
-
+    on<ReviewPageLoadedEvent>(_reviewPageLoaded);
   }
+  Future<void> _reviewPageLoaded(ReviewPageLoadedEvent event, Emitter<AddMealState> emit) async {
+    emit(state.copyWith(status: AddMealStatus.reviewInfoLoaded));
+  }
+
   Future<void> _toggleEditable(ToggleEditableEvent event, Emitter<AddMealState> emit) async {
     emit(state.copyWith(isReviewEditable: !state.isReviewEditable));
   }
@@ -81,8 +85,8 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
       ExtractNutriEvent event,
       Emitter<AddMealState> emit
       )async{
-    emit(state.copyWith(status: AddMealStatus.loading));
     try{
+      emit(state.copyWith(status: AddMealStatus.loading));
       Meal? meal = await mealRepository.extractNutrition(event.file);
       meal!.name = event.name;
       emit(state.copyWith(status: AddMealStatus.nutriExtracted, meal: meal));

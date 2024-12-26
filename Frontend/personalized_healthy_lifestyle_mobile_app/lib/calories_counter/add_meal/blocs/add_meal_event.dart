@@ -40,4 +40,6 @@ class ExtractNutriEvent extends AddMealEvent{
 
 class ToggleEditableEvent extends AddMealEvent{}
 
+class ReviewPageLoadedEvent extends AddMealEvent{}
+
 
