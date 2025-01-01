@@ -1,13 +1,14 @@
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:schedule_generator/sport/add_user_sport/add_user_sport_screen.dart';
 import 'package:schedule_generator/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_state.dart';
 
 import '../../user/blocs/user_bloc.dart';
+import '../add_sport/screen/add_sport_screen.dart';
+import '../add_sport/blocs/add_sport_bloc.dart';
 
 
 class SearchSportScreen extends StatelessWidget {
@@ -39,18 +40,13 @@ class DebouncedSearchBar extends StatefulWidget {
 
 
   @override
-  _DebouncedSearchBarState createState() => _DebouncedSearchBarState();
+  State<DebouncedSearchBar> createState() => _DebouncedSearchBarState();
 }
 
 class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
 
   final SearchController _searchController = SearchController();
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
   @override
   Widget build(BuildContext context) {
 
@@ -76,32 +72,85 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
           BlocConsumer<SearchSportBloc, SearchSportState>(
             builder: (context,state){
               if (state.status == SearchSportStatus.loading){
-                return  const Center(child: CircularProgressIndicator());
+                return const Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 8.0,vertical: 20),
+                  child:  Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
               if(state.status == SearchSportStatus.sportsLoaded && state.sports != null){
                 if(state.sports!.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(child: Text("No results found")),
-                  ) ;
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Container(
+                          width: 96,
+                          height: 96,
+                          decoration: const BoxDecoration(
+                            color: Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.search_off,
+                            size: 48,
+                            color: Colors.white54,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'No Results Found',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          'We couldn\'t find what you\'re looking for. Would you like to add it?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add New Sport'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        onPressed: () {
+                          final model = BlocProvider.of<SearchSportBloc>(context);
+                          model.add(const AddNewSportBtnSelectedEvent());
+                        },
+                      ),
+                    ],
+                  );
                 }
 
-                return ListView(
-                  shrinkWrap: true, // Ensures the ListView takes only necessary space
-                  children: state.sports!.map((result) {
-                    return ListTile(
-                      title: Text(result.name),
-                      trailing: Text(
-                        result.caloriesBurntPerHourPerKg != null
-                            ? "${result.caloriesBurntPerHourPerKg?.toStringAsFixed(2)} cals/h/kg"
-                            : "",
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                      onTap: () async {
-                        model.add(SportSelected(id: result.id!));
-                      },
-                    );
-                  }).toList(),
+                return SingleChildScrollView(
+                  child: ListView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true, // Ensures the ListView takes only necessary space
+                    children: state.sports!.map((result) {
+                      return ListTile(
+                        title: Text(result.name),
+                        trailing: Text(
+                          result.caloriesBurntPerHourPerKg != null
+                              ? "${result.caloriesBurntPerHourPerKg?.toStringAsFixed(2)} kcal/h/kg"
+                              : "",
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        onTap: () async {
+                          model.add(SportSelectedEvent(id: result.id!));
+                        },
+                      );
+                    }).toList(),
+                  ),
                 );
 
 
@@ -112,23 +161,36 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
               }
              return Container();
             }, listener: (context, state) {
-            final userState = BlocProvider.of<UserBloc>(context).state;
 
-            int userId;
-            if(userState is LoginSuccess){
-
-              userId = userState.userId;
-
-              Navigator.pushReplacement(
+            if(state.status == SearchSportStatus.selected && state.selectedSport!=null) {
+              final userState = BlocProvider.of<UserBloc>(context).state;
+              int userId;
+              if(userState is LoginSuccess){
+                userId = userState.userId;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddUserSportScreen(sport: state.selectedSport!, userId: userId, date: widget.date),
+                  ),
+                );
+              }
+            }
+            else if(state.status == SearchSportStatus.addNewSportSelected){
+              Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddUserSportScreen(sport: state.selectedSport!, userId: userId, date: widget.date),
+                  builder: (context) {
+                    return BlocProvider(
+                      create: (context) => AddSportBloc(),
+                      child: const AddSportScreen(),
+                    );
+                  },
                 ),
               );
             }
           },
             listenWhen: (context,state){
-              return (state.status == SearchSportStatus.selected && state.selectedSport!=null);
+              return (state.status == SearchSportStatus.selected || state.status == SearchSportStatus.addNewSportSelected );
             },
           )];
       },

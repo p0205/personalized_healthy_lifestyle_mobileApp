@@ -1,19 +1,17 @@
 part of 'add_meal_bloc.dart';
 
+abstract class AddUserMealEvent extends Equatable{
+  const AddUserMealEvent();
 
-
-
-abstract class AddMealEvent extends Equatable{
-  const AddMealEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class NoOfServingsSelected extends AddMealEvent{}
-class AmountInGramsSelected extends AddMealEvent{}
+class NoOfServingsSelected extends AddUserMealEvent{}
+class AmountInGramsSelected extends AddUserMealEvent{}
 
-class UserInput extends AddMealEvent{
+class UserInput extends AddUserMealEvent{
 
   final double userInput;
   final Meal food;
@@ -23,13 +21,14 @@ class UserInput extends AddMealEvent{
   List<Object?> get props => [food, userInput];
 }
 
-class DisposeCalculation extends AddMealEvent{}
 
-class CalculateBtnClicked extends AddMealEvent{
+class DisposeCalculation extends AddUserMealEvent{}
+
+class CalculateBtnClicked extends AddUserMealEvent{
 
 }
 
-class AddMealBtnClicked extends AddMealEvent{
+class AddMealBtnClicked extends AddUserMealEvent{
 
   final String mealType;
   final double amountInGrams;
@@ -47,7 +46,6 @@ class AddMealBtnClicked extends AddMealEvent{
         required this.proteinInGrams,
         required this.fatInGrams,
         required this.calories,
-
       }
       );
   @override

@@ -8,17 +8,15 @@ import '../../../common_widgets/donut_chart.dart';
 import '../../models/user_meal.dart';
 import '../../search_meal/screen/search_food_screen.dart';
 
+class CaloriesCounterMainScreen extends StatefulWidget{
 
-
-class CaloriesCounterMain extends StatefulWidget{
-
-   const CaloriesCounterMain({super.key});
+   const CaloriesCounterMainScreen({super.key});
 
   @override
-  State<CaloriesCounterMain> createState() => _CaloriesCounterMainState();
+  State<CaloriesCounterMainScreen> createState() => _CaloriesCounterMainScreenState();
 }
 
-class _CaloriesCounterMainState extends State<CaloriesCounterMain> {
+class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +30,23 @@ class _CaloriesCounterMainState extends State<CaloriesCounterMain> {
                     fontSize: 25,
                     fontWeight: FontWeight.bold
                 ),
+
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  iconSize: 30.0,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
               body: SingleChildScrollView(
                 child: BlocBuilder<CaloriesCounterMainBloc,CaloriesCounterMainState>(
                   builder: (BuildContext context, CaloriesCounterMainState state) {
-                  final Map<String, List<UserMeal>?>? mealList = state.mealList;
-                  final MealSummary summary = state.summary!;
+
+
+                  final Map<String, List<UserMeal>?>? mealList = context.read<CaloriesCounterMainBloc>().state.mealList;
+                  final MealSummary summary = context.read<CaloriesCounterMainBloc>().state.summary!;
+
 
                   return  Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -81,14 +90,12 @@ class _CaloriesCounterMainState extends State<CaloriesCounterMain> {
                     ),
                   );
                   },
-                  buildWhen:(context,state) {
-                    return (state.status == CaloriesCounterMainStatus.mealDeleted);
-                  } ,
                 )
               )
           );
   }
 }
+
 
 // class CaloriesCounterPage extends StatefulWidget{
 //   late final Map<String, List<UserMeal>?>? mealList;
@@ -157,6 +164,7 @@ class _CaloriesCounterMainState extends State<CaloriesCounterMain> {
 //
 
 
+
 class CaloriesChart extends StatelessWidget {
 
   const CaloriesChart({
@@ -184,7 +192,9 @@ class CaloriesChart extends StatelessWidget {
         donutSizePercentage: 0.7,
         columnLabel: "Intake amount (g)",
         containerHeight: 240,
-        centerText:  isExceed? "${summary.caloriesLeft.toStringAsFixed(2)} cals\nexceed": "${summary.caloriesLeft.toStringAsFixed(2)} cals\nremaining",
+
+        centerText:  isExceed? "${summary.caloriesLeft.toStringAsFixed(2)} kcal\nexceed": "${summary.caloriesLeft.toStringAsFixed(2)} kcal\nremaining",
+
         centerTextColor: isExceed? Colors.redAccent : null,
       ),
     );
@@ -242,7 +252,8 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    "$totalCaloriesString cals",
+
+                    "$totalCaloriesString kcal",
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                   ),
                 ),
@@ -253,7 +264,8 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                   ),
                   onPressed: () {
                     final String mealType = widget.section;
-                    Navigator.pushReplacement(
+
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SearchPage(mealType: mealType)),
                     );
@@ -266,7 +278,8 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
             const SizedBox(height: 10),
             widget.meals == null ?
               const Text(
-                  "No meal is added",
+
+                  "No record",
                   style: TextStyle(color: Colors.grey ,fontSize: 13, fontWeight: FontWeight.normal),
               )
                 :
@@ -285,29 +298,37 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min, // To keep the row compact
                       children: [
-                        Text("${meal.calories!.toStringAsFixed(2)} cals"),
+
+                        Text("${meal.calories!.toStringAsFixed(2)} kcal"),
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.redAccent),
                           onPressed: () {
 
                             showDialog(
                               context: context,
+
+                              barrierDismissible: false,
                               builder: (context) => Center(
                                   child: AlertDialog(
                                     content: const Text(
-                                        "Confirm to delete This Meal? "),
+                                        "Confirm to delete This Meal? ",
+                                      textAlign: TextAlign.center,
+                                    ),
                                     actions: <Widget>[
                                       // usually buttons at the bottom of the dialog
                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           ElevatedButton(
                                             child: const Text("OK"),
                                             onPressed: () {
                                               final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
-                                              caloriesCounterBloc.add(DeleteMealBtnClicked(userMealId: meal.id));
+
+                                              caloriesCounterBloc.add(DeleteMealBtnClicked(userMealId: meal.id!));
                                               Navigator.pop(context);
                                             },
                                           ),
+                                          const SizedBox(width: 8),
                                           ElevatedButton(
                                             child: const Text("CANCEL"),
                                             onPressed: () {

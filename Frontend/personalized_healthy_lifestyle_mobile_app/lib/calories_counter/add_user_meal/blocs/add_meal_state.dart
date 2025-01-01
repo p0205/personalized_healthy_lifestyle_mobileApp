@@ -5,15 +5,16 @@
 // unsaved
 part of 'add_meal_bloc.dart';
 
-enum AddMealStatus{
+enum AddUserMealStatus{
   initial,
   loading,
   mealAdded,
   failure
 }
 
-class AddMealState extends Equatable {
-  final AddMealStatus status;
+
+class AddUserMealState extends Equatable {
+  final AddUserMealStatus status;
   final double? amountIntakeInGrams;
   final double? carbsIntake;
   final double? proteinIntake;
@@ -25,11 +26,12 @@ class AddMealState extends Equatable {
   final int userId;
   final int mealId;
 
-  const AddMealState({
+
+  const AddUserMealState({
     required this.userId,
     required this.mealId,
-    this.status = AddMealStatus.initial,
-    this.isNoOfServingSelected = true,
+    this.status = AddUserMealStatus.initial,
+    this.isNoOfServingSelected = false,
     this.isCalculated = false,
     this.amountIntakeInGrams,
     this.carbsIntake,
@@ -42,10 +44,11 @@ class AddMealState extends Equatable {
   @override
   List<Object?> get props => [userId, mealId, status, amountIntakeInGrams, carbsIntake, proteinIntake, fatIntake,energyIntake, message, isNoOfServingSelected, isCalculated];
 
-  AddMealState copyWith({
+
+  AddUserMealState copyWith({
     int? userId,
     int? mealId,
-    AddMealStatus? status,
+    AddUserMealStatus? status,
     bool? isNoOfServingSelected,
     bool? isCalculated,
     double? amountIntakeInGrams,
@@ -56,7 +59,8 @@ class AddMealState extends Equatable {
     String? message
 
   }) {
-    return AddMealState(
+
+    return AddUserMealState(
       userId: userId ?? this.userId,
       mealId: mealId ?? this.userId,
       status: status ?? this.status,

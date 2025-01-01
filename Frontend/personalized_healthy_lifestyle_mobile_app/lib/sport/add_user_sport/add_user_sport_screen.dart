@@ -7,7 +7,6 @@ import 'package:schedule_generator/user/blocs/user_bloc.dart';
 
 import '../../../user/blocs/user_state.dart';
 import '../sport_main/blocs/sport_main_bloc.dart';
-import '../sport_main/screen/sport_main_page.dart';
 import '../sport_models/sport.dart';
 
 class AddUserSportScreen extends StatelessWidget{
@@ -57,7 +56,8 @@ class AddUserSportScreen extends StatelessWidget{
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: _buildInfoBox('Calories burnt per kg/hour', '${sport.caloriesBurntPerHourPerKg} cals'),
+                          child: _buildInfoBox('Calories burnt per kg/hour', '${sport.caloriesBurntPerHourPerKg} kcal'),
+
                         ),
                       ],
                     ),
@@ -276,35 +276,29 @@ class _toggleButtonState extends State<ToggleButton> {
         final sportMainBloc = context.read<SportMainBloc>();
         sportMainBloc.add(SportAdded());
 
-        sportMainBloc.stream.listen((counterState) {
-          print(counterState.status);
-          if (counterState.status == SportMainStatus.sportAdded) {
             showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (context) => Center(
                   child: AlertDialog(
                     content: const Text(
                         "Sport is added."),
+
                     actions: <Widget>[
                       // usually buttons at the bottom of the dialog
                       ElevatedButton(
                         child: const Text("OK"),
                         onPressed: () {
                           sportMainBloc.add(LoadUserSportList());
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SportMainPage(),
-                            ),
-                          );// Close the dialog
+
+                          Navigator.popUntil(context, (route) => route.settings.name == "/sportMain");
+
                         },
                       ),
                     ],
                   )
               ),
             );
-          }
-        });
       },
 
       listenWhen: (previous,current){

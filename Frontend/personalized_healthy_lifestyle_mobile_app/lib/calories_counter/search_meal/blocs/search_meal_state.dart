@@ -6,7 +6,8 @@ enum SearchFoodStatus {
   loading,
   foodsLoaded,
   failure,
-  selected
+  selected,
+  addNewMealSelected
 }
 
 

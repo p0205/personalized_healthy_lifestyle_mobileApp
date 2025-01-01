@@ -1,13 +1,12 @@
 
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_bloc.dart';
 
 import '../../../common_widgets/donut_chart.dart';
 import '../../../user/blocs/user_state.dart';
 import '../../calories_counter_main/blocs/calories_counter_main_bloc.dart';
-import '../../calories_counter_main/screen/calories_counter_main.dart';
 import '../../models/meal.dart';
 import '../blocs/add_meal_bloc.dart';
 
@@ -37,11 +36,18 @@ class FoodDetailsPage extends StatelessWidget{
     }
 
     return BlocProvider(
-      create: (context) => AddMealBloc(meal: meal, mealType: mealType, userId: userId),
+      create: (context) => AddUserMealBloc(meal: meal, mealType: mealType, userId: userId),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Add Food'),
           backgroundColor: Colors.blueAccent,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            iconSize: 30.0,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -65,21 +71,21 @@ class FoodDetailsPage extends StatelessWidget{
                     donutSizePercentage: 0.7,
                     columnLabel: "Value per 100 g (g)",
                     containerHeight: 250,
-                    centerText: meal.energyPer100g != null ? "${meal.energyPer100g?.toStringAsFixed(2)} cals\n per 100 g" : null
+
+                    centerText: meal.energyPer100g != null ? "${meal.energyPer100g?.toStringAsFixed(2)} kcal\n per 100 g" : null
                   ),
                 ),
                 const SizedBox(height: 30),
-
-                meal.unitWeight != null ?
                  Text(
-                    "Serving size: ${meal.unitWeight}g",
+                   meal.unitWeight != null ? "Serving size: ${meal.unitWeight}g" : "No serving size",
+
+
                   style: const TextStyle(
                       fontSize: 15,
                     fontWeight: FontWeight.w800,
 
                   ),
-                ) : const SizedBox(height: 21) ,
-
+                ),
                 const SizedBox(height: 10), // Add top spacing
 
                 ToggleButton(
@@ -118,19 +124,33 @@ class _ToggleButtonState extends State<ToggleButton> {
   @override
   Widget build(BuildContext context) {
     double? userInputValue ;
-    return BlocConsumer<AddMealBloc,AddMealState>(
+    return BlocConsumer<AddUserMealBloc,AddUserMealState>(
+
       builder: (context, state) {
         return Column(
           children: [
             ToggleButtons(
-              isSelected: [
-                state.isNoOfServingSelected,
-                !state.isNoOfServingSelected
+
+              isSelected:
+              widget.meal.unitWeight == null ?
+              [
+                true,
+                false
+              ]
+                  :
+              [
+                !state.isNoOfServingSelected,
+                state.isNoOfServingSelected
               ],
               onPressed: (int index){
-                final model = BlocProvider.of<AddMealBloc>(context);
-                if(index == 0 ){
-                  model.add(NoOfServingsSelected());
+                final model = BlocProvider.of<AddUserMealBloc>(context);
+                if(index == 1 ){
+                  if(widget.meal.unitWeight == null) {
+                    return;
+                  }else{
+                    model.add(NoOfServingsSelected());
+                  }
+
                 }else{
                   model.add(AmountInGramsSelected());
                 }
@@ -141,13 +161,13 @@ class _ToggleButtonState extends State<ToggleButton> {
               borderRadius: BorderRadius.circular(8.0),
               children: const [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text("Number of Servings"),
-                ),
-                Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.0),
                     child: Text("Amount in grams")
                 ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text("Number of Servings"),
+                )
               ],
             ),
             const SizedBox(height: 10),
@@ -165,11 +185,14 @@ class _ToggleButtonState extends State<ToggleButton> {
                 }
               },
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              controller: _controller, // Attach the controller to the TextField
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$'))],
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
-                      final model = BlocProvider.of<AddMealBloc>(context);
+
+                      final model = BlocProvider.of<AddUserMealBloc>(context);
                       setState(() {
                         _controller.clear();
                         model.add(DisposeCalculation());
@@ -200,7 +223,8 @@ class _ToggleButtonState extends State<ToggleButton> {
               visible: !state.isCalculated,
               child: ElevatedButton(onPressed: ()
               {
-                final model = BlocProvider.of<AddMealBloc>(context);
+                final model = BlocProvider.of<AddUserMealBloc>(context);
+
                 model.add(UserInput(food: widget.meal, userInput: userInputValue!));
 
               },
@@ -219,7 +243,9 @@ class _ToggleButtonState extends State<ToggleButton> {
               visible: state.isCalculated,
               child: ElevatedButton(onPressed: () async
               {
-                final model = BlocProvider.of<AddMealBloc>(context);
+
+                final model = BlocProvider.of<AddUserMealBloc>(context);
+
                 final userState = BlocProvider.of<UserBloc>(context).state;
                 final userMealState = model.state;
 
@@ -248,11 +274,10 @@ class _ToggleButtonState extends State<ToggleButton> {
                 final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
                 caloriesCounterBloc.add(ReloadMealList());
                 // Listen to CaloriesCounterMainBloc state changes
-               caloriesCounterBloc.stream.listen((counterState) {
-                 if (counterState.status == CaloriesCounterMainStatus.mealListReloaded) {
                    showDialog(
                      context: context,
-                     builder: (context) => Center(
+                     barrierDismissible: false,
+                     builder: (BuildContext dialogContext) => Center(
                        child: AlertDialog(
                          content: const Text(
                              "Meal is added."),
@@ -261,27 +286,17 @@ class _ToggleButtonState extends State<ToggleButton> {
                             ElevatedButton(
                              child: const Text("OK"),
                              onPressed: () {
-                               Navigator.pushReplacement(
-                                 context,
-                                 MaterialPageRoute(
-                                   builder: (context) => const CaloriesCounterMain(
 
-                                   ),
-                                 )
-                               );// Close the dialog
+                               Navigator.popUntil(context, (route) => route.settings.name == "/mealMain");
                              },
                            ),
                          ],
                        )
                      ),
                    );
-
-                 }
-               });
            },
-
       listenWhen: (previous,current){
-        return current.status == AddMealStatus.mealAdded;
+        return current.status == AddUserMealStatus.mealAdded;
       },
 
     );
@@ -294,7 +309,7 @@ class NutrientCardGroup extends StatefulWidget {
 
   const NutrientCardGroup({super.key});
   @override
-  _NutrientCardGroupState createState() => _NutrientCardGroupState();
+  State<NutrientCardGroup> createState() => _NutrientCardGroupState();
 }
 
 class _NutrientCardGroupState extends State<NutrientCardGroup> {
@@ -328,10 +343,10 @@ class _NutrientCardGroupState extends State<NutrientCardGroup> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddMealBloc,AddMealState>(
+    return BlocBuilder<AddUserMealBloc,AddUserMealState>(
       builder: (context, state) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 2.0),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -8,16 +8,10 @@ enum SearchSportStatus {
   loading,
   sportsLoaded,
   failure,
-  selected
+  selected,
+  addNewSportSelected
 }
 
-extension SearchSportStateX on SearchSportState {
-  bool get isInitial => this == SearchSportStatus.initial;
-  bool get isLoading => this == SearchSportStatus.loading;
-  bool get isSuccess => this == SearchSportStatus.sportsLoaded;
-  bool get isFailure => this == SearchSportStatus.failure;
-  bool get isSelected => this == SearchSportStatus.selected;
-}
 
 class SearchSportState extends Equatable{
 

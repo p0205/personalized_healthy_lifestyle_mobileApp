@@ -69,11 +69,11 @@ class _CaloriesCounterState extends State<CaloriesCounter> {
   Widget build(BuildContext context) {
     return BlocListener<CaloriesCounterMainBloc,CaloriesCounterMainState>(
       listener: (context, state) {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  const CaloriesCounterMain()),
+                  const CaloriesCounterMainScreen(),settings: const RouteSettings(name: "/mealMain")),
         );
       },
       listenWhen: (context,state){
@@ -99,10 +99,10 @@ class _CaloriesCounterState extends State<CaloriesCounter> {
                         onPressed: () {
                           final model = context.read<SportMainBloc>();
                           model.add(LoadUserSportList());
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SportMainPage(),
+                              builder: (context) => const SportMainPage(),settings: const RouteSettings(name: "/sportMain"),
                             ),
                           );
                         },

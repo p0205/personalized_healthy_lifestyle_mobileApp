@@ -19,9 +19,9 @@ class SearchSportBloc extends Bloc<SearchSportEvent,SearchSportState>{
     on<SearchQueryChanged>(_searchMatchingFood,
         transformer: debounce(const Duration(milliseconds: 500)));
 
-    on<SportSelected>(_onSelectFood);
-
-    on<BackToSearchSportPage>(_backToSearchFoodPage);
+    on<SportSelectedEvent>(_onSelectFood);
+    on<BackToSearchSportPageEvent>(_backToSearchFoodPage);
+    on<AddNewSportBtnSelectedEvent>(_addNewSportBtnSelected);
   }
 
 
@@ -47,7 +47,7 @@ class SearchSportBloc extends Bloc<SearchSportEvent,SearchSportState>{
     return (event,mapper) => event.debounceTime(duration).flatMap(mapper);
   }
 
-  Future<void> _onSelectFood(SportSelected event, Emitter<SearchSportState> emit) async {
+  Future<void> _onSelectFood(SportSelectedEvent event, Emitter<SearchSportState> emit) async {
     emit(state.copyWith(status:SearchSportStatus.loading));
 
     try{
@@ -58,7 +58,12 @@ class SearchSportBloc extends Bloc<SearchSportEvent,SearchSportState>{
     }
   }
 
-  Future<void> _backToSearchFoodPage(BackToSearchSportPage event, Emitter<SearchSportState> emit) async {
+
+  Future<void> _backToSearchFoodPage(BackToSearchSportPageEvent event, Emitter<SearchSportState> emit) async {
     emit(state.copyWith(status:SearchSportStatus.selected));
+  }
+
+  Future<void> _addNewSportBtnSelected(AddNewSportBtnSelectedEvent event, Emitter<SearchSportState> emit) async {
+    emit(state.copyWith(status:SearchSportStatus.addNewSportSelected));
   }
 }

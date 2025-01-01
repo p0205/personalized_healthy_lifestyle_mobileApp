@@ -1,9 +1,11 @@
 //search food return List<Food> (id ,name)
 //search specific food return Food
+
+
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io' show Platform;
-
+import 'dart:io' show File;
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
 import 'package:schedule_generator/calories_counter/models/user_meal.dart';
@@ -16,23 +18,37 @@ class GetFoodFailure implements Exception{}
 class AddMealFailure implements Exception{}
 class AddUserMealFailure implements Exception{}
 class DeleteUserMealFailure implements Exception{}
+class GetUserMealListByDateFailure implements Exception{}
+class GetNutritionalSummaryFailure implements Exception{}
 
 class MealApiProvider{
 
   final String _baseUrl;
   final http.Client _httpClient;
+  final dio = Dio();
 
   MealApiProvider({http.Client? httpClient})
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
 
+
+  // static String _getBaseUrl() {
+  //   if (Platform.isAndroid) {
+  //     return "10.0.2.2:8080"; // Android emulator localhost
+  //
+  //   } else {
+  //     return "localhost:8080";
+  //   }
+  // }
+
+  // // physical Android devices
   static String _getBaseUrl() {
-    if (Platform.isAndroid) {
-      return "10.0.2.2:8080"; // Android emulator localhost
-    } else {
-      return "localhost:8080";
-    }
+    return "192.168.1.3:8080";
   }
+
+  // static String _getBaseUrl() {
+  //   return "192.168.173.30:8080";
+  // }
 
   // api : localhost:8080/meal/search
   Future<List<Meal>> getMatchingMealList(String query) async {
@@ -62,6 +78,7 @@ class MealApiProvider{
 
   // api : POST localhost:8080/meal
   Future<void> addMeal(Meal meal)async{
+
     final uri = Uri.http(_baseUrl,"/meal");
 
     final response = await _httpClient.post(
@@ -82,7 +99,8 @@ class MealApiProvider{
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
-      throw AddMealFailure();
+
+      throw GetUserMealListByDateFailure();
     }
 
     final Map<String, dynamic> data = json.decode(response.body);
@@ -92,23 +110,16 @@ class MealApiProvider{
     });
   }
 
-  Future<void> addUserMeal(int userId, String mealType, double amountInGrams,double carbsInGrams, double proteinInGrams, double fatInGrams, double calories, int mealId) async {
-    Map<String,Object> request = {
-      "mealType": mealType,
-      "userId": userId,
-      "mealId": mealId,
-      "amountInGrams": amountInGrams,
-      "calories": calories,
-      "carbsInGrams": carbsInGrams,
-      "proteinInGrams":proteinInGrams,
-      "fatInGrams": fatInGrams,
-    };
+
+  Future<void> addUserMeal(UserMeal userMeal) async {
+
     // final uri = Uri.http(_baseUrl,"/meal/user",{"userId": userId.toString()});
     final uri = Uri.http(_baseUrl,"/meal/user");
     final response = await _httpClient.post(
         uri,
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode(request)
+
+        body: jsonEncode(userMeal)
     );
 
     if(response.statusCode != 201){
@@ -123,7 +134,8 @@ class MealApiProvider{
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
-      throw AddMealFailure();
+
+      throw GetNutritionalSummaryFailure();
     }
     final Map<String, dynamic> data = json.decode(response.body);
     return MealSummary.fromJson(data);
@@ -141,6 +153,64 @@ class MealApiProvider{
     }
   }
 
+
+
+  // Future<Meal?> extractNutrition(File file, StreamController<double> progressController) async {
+  //   final uri = Uri.http(_baseUrl, "/image/extract");
+  //   final formData = FormData.fromMap({
+  //     'file': await MultipartFile.fromFile(file.path),
+  //   });
+  //
+  //   try {
+  //     final response = await dio.post(
+  //       uri.toString(),
+  //       data: formData,
+  //       onSendProgress: (int sent, int total) {
+  //         // Emit progress as a value between 0.0 and 1.0
+  //         progressController.add(sent / total);
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       // Return the Meal object after successful upload
+  //       return Meal.fromJson(response.data);
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     throw Exception("File upload failed: $e");
+  //   } finally {
+  //     progressController.close();
+  //   }
+  // }
+  Future<Meal?> extractNutrition(File file) async{
+    final uri = Uri.http(_baseUrl,"/image/extract");
+    // var request = http.MultipartRequest("POST",uri);
+    // request.files.add(await http.MultipartFile.fromPath("file",file.path));
+    //
+    // var response = await request.send();
+    // if(response.statusCode == 200){
+    //   //TODO: Upload successfully
+    //   print("Uploaded");
+    // }else{
+    //   //TODO: Handle error
+    // }
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(file.path),
+    });
+    final response = await dio.post(
+        uri.toString(),
+        data: formData,
+        onSendProgress: (int sent, int total) {
+      },);
+    if(response.statusCode == 200){
+      //TODO: Upload successfully
+      Meal meal = Meal.fromJson((response.data));
+      return meal;
+    }else{
+      return null;
+    }
+  }
 
 }
 

@@ -110,7 +110,7 @@ TableRow _buildTableRow(ChartData data) {
   return TableRow(
     children: [
       Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(6.0),
         child: Row(
           children: [
             Container(
@@ -125,7 +125,7 @@ TableRow _buildTableRow(ChartData data) {
             Text(
               data.name,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontFamily: "Itim",
               ),
             ),
@@ -143,19 +143,22 @@ TableRow _buildTableRow(ChartData data) {
           '${(data.percentage! * 100).toStringAsFixed(1)}%',
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: "Itim",
             color: Colors.black,
           ),
         ),
       ),
-      Text(
-        data.value.toStringAsFixed(2),
-        style: const TextStyle(
-          fontSize: 16,
-          fontFamily: "Itim",
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          data.value.toStringAsFixed(2),
+          style: const TextStyle(
+            fontSize: 14,
+            fontFamily: "Itim",
+          ),
+          textAlign: TextAlign.right,
         ),
-        textAlign: TextAlign.right,
       ),
     ],
   );

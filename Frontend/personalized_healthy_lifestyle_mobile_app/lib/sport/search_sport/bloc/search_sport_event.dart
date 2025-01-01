@@ -15,13 +15,16 @@ class SearchQueryChanged extends SearchSportEvent{
   List<Object?> get props => [query];
 }
 
-class SportSelected extends SearchSportEvent{
+class SportSelectedEvent extends SearchSportEvent{
   final int id;
-
-  const SportSelected({required this.id});
+  const SportSelectedEvent({required this.id});
 }
 
-class BackToSearchSportPage extends SearchSportEvent{
-  const BackToSearchSportPage();
+class BackToSearchSportPageEvent extends SearchSportEvent{
+  const BackToSearchSportPageEvent();
+}
+
+class AddNewSportBtnSelectedEvent extends SearchSportEvent{
+  const AddNewSportBtnSelectedEvent();
 }
 

@@ -20,9 +20,13 @@ class SportRepository{
     return sport;
   }
 
-  // Future<void> addSport(Sport sport) async {
-  //   await sportDataProvider.addSport(sport);
-  // }
+  Future<void> addSport(Sport sport) async {
+    await sportDataProvider.addSport(sport);
+  }
+
+  Future<List<String>> getDistinctSportTypes() async {
+    return await sportDataProvider.getDistinctSportTypes();
+  }
 
   Future<Map<String, List<UserSport>>> getUserSportListByDate(int userId, DateTime date) async {
     return await sportDataProvider.getUserSportListByDate(userId, date);

@@ -26,3 +26,5 @@ class BackToSearchFoodPage extends SearchFoodEvent{
   const BackToSearchFoodPage();
 }
 
+class AddNewMealBtnSelected extends SearchFoodEvent {}
+

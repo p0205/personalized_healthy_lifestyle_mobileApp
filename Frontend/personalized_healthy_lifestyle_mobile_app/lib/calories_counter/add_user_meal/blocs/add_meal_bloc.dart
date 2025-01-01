@@ -1,5 +1,8 @@
  import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:schedule_generator/calories_counter/models/user_meal.dart';
+
 import 'package:schedule_generator/calories_counter/repository/meal_repository.dart';
 
 import '../../models/meal.dart';
@@ -7,16 +10,15 @@ import '../../models/meal.dart';
 part 'add_meal_event.dart';
 part 'add_meal_state.dart';
 
-class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
+class AddUserMealBloc extends Bloc<AddUserMealEvent,AddUserMealState>{
 
   final MealApiRepository mealRepository = MealApiRepository();
   final Meal meal;
   final int userId;
   final String mealType;
 
-
-  AddMealBloc({required this.meal, required this.mealType, required this.userId})
-      : super(AddMealState(
+  AddUserMealBloc({required this.meal, required this.mealType, required this.userId})
+      : super(AddUserMealState(
     userId: userId,
     mealId: meal.id!, // Map meal's id to mealId in the state
     )) {
@@ -31,21 +33,21 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
 
   Future<void> _onNoOfServingSelected(
       NoOfServingsSelected event,
-      Emitter<AddMealState> emit
+      Emitter<AddUserMealState> emit
       ) async {
     emit(state.copyWith(isNoOfServingSelected: true));
   }
 
   Future<void> _onAmountInGramsSelected(
       AmountInGramsSelected event,
-      Emitter<AddMealState> emit
+      Emitter<AddUserMealState> emit
       ) async {
     emit(state.copyWith(isNoOfServingSelected: false));
   }
 
   Future<void> _onUserInput(
       UserInput event,
-    Emitter<AddMealState> emit
+    Emitter<AddUserMealState> emit
   )  async {
 
     double? amountIntakeInGrams;
@@ -93,18 +95,18 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
 
   Future<void> _onBtnClicked(
       CalculateBtnClicked event,
-      Emitter<AddMealState> emit
+      Emitter<AddUserMealState> emit
       ) async {
     if(state.amountIntakeInGrams != null) {
       emit(state.copyWith(isCalculated: true));
     }else{
-      emit(state.copyWith(status: AddMealStatus.failure,message: "Please enter intake amount!"));
+      emit(state.copyWith(status: AddUserMealStatus.failure,message: "Please enter intake amount!"));
     }
   }
 
   Future<void> _onDisposeCalculation(
       DisposeCalculation event,
-      Emitter<AddMealState> emit
+      Emitter<AddUserMealState> emit
       ) async {
     emit(state.copyWith(isCalculated: false));
   }
@@ -112,13 +114,24 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
 
   Future<void> _onAddMeal(
       AddMealBtnClicked event,
-      Emitter<AddMealState> emit
+      Emitter<AddUserMealState> emit
       ) async {
       try{
-        await mealRepository.addUserMeal(state.userId, event.mealType, double.parse(state.amountIntakeInGrams!.toStringAsFixed(2)) , double.parse(state.carbsIntake!.toStringAsFixed(2)),  double.parse(state.proteinIntake!.toStringAsFixed(2)),  double.parse(state.fatIntake!.toStringAsFixed(2)),  double.parse(state.energyIntake!.toStringAsFixed(2)), state.mealId);
-        emit(state.copyWith(status: AddMealStatus.mealAdded));
+        double? carbsIntake;
+        double? proteinIntake;
+        double? fatIntake;
+        double? energyIntake;
+
+        state.carbsIntake != null ? carbsIntake = double.parse(state.carbsIntake!.toStringAsFixed(2)) : null;
+        state.proteinIntake != null ? proteinIntake = double.parse(state.proteinIntake!.toStringAsFixed(2)) : null;
+        state.fatIntake != null ? fatIntake = double.parse(state.fatIntake!.toStringAsFixed(2)) : null;
+        state.energyIntake != null ? energyIntake = double.parse(state.energyIntake!.toStringAsFixed(2)) : null;
+        UserMeal userMeal = UserMeal(mealType: mealType, userId: userId, mealId: state.mealId, amountInGrams:double.parse(state.amountIntakeInGrams!.toStringAsFixed(2)),calories: energyIntake,proteinInGrams: proteinIntake,fatInGrams: fatIntake,carbsInGrams: carbsIntake);
+
+        await mealRepository.addUserMeal(userMeal);
+        emit(state.copyWith(status: AddUserMealStatus.mealAdded));
       }catch(e){
-        emit(state.copyWith(status: AddMealStatus.failure, message: e.toString()));
+        emit(state.copyWith(status: AddUserMealStatus.failure, message: e.toString()));
       }
   }
 }

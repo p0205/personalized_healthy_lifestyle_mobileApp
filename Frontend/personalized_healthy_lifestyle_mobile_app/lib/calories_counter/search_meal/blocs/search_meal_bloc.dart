@@ -22,8 +22,8 @@ class SearchFoodBloc extends Bloc<SearchFoodEvent,SearchFoodState>{
         transformer: debounce(const Duration(milliseconds: 500)));
 
     on<FoodSelected>(_onSelectFood);
-
     on<BackToSearchFoodPage>(_backToSearchFoodPage);
+    on<AddNewMealBtnSelected>(_addNewMealBtnSelected);
   }
 
 
@@ -62,5 +62,10 @@ class SearchFoodBloc extends Bloc<SearchFoodEvent,SearchFoodState>{
 
   Future<void> _backToSearchFoodPage(BackToSearchFoodPage event, Emitter<SearchFoodState> emit) async {
     emit(state.copyWith(status:SearchFoodStatus.selected));
-    }
+  }
+
+  Future<void> _addNewMealBtnSelected(AddNewMealBtnSelected event, Emitter<SearchFoodState> emit) async {
+    emit(state.copyWith(status:SearchFoodStatus.addNewMealSelected));
+  }
+
   }

@@ -30,6 +30,13 @@ class _SportMainPageState extends State<SportMainPage> {
                   fontSize: 25,
                   fontWeight: FontWeight.bold
               ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                iconSize: 30.0,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
             body: SingleChildScrollView(
               child: Padding(
@@ -68,7 +75,7 @@ class _SportMainPageState extends State<SportMainPage> {
                             child: Center(child: Text("No results found")),
                           ),
                           ElevatedButton(onPressed: (){
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => SearchSportScreen(date: state.dateString!),
@@ -118,7 +125,7 @@ class _SportMainPageState extends State<SportMainPage> {
                                 ),
                               ),
                               ElevatedButton(onPressed: (){
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => SearchSportScreen(date: summary.date),
@@ -193,9 +200,9 @@ class CaloriesChart extends StatelessWidget {
       child: DonutChart(
         dataList: calsByTypeData,
         donutSizePercentage: 0.7,
-        columnLabel: "Calories Burnt (cals)",
+        columnLabel: "Calories Burnt (kcal)",
         containerHeight: 240,
-        centerText:  "${summary.totalCalsBurnt.toStringAsFixed(2)} cals\nburnt",
+        centerText:  "${summary.totalCalsBurnt.toStringAsFixed(2)} kcal\nburnt",
       ),
     );
   }
@@ -253,7 +260,7 @@ class _SportCardState extends State<SportCard> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    "$totalCalsBurntString cals",
+                    "$totalCalsBurntString kcal",
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                   ),
                 ),
@@ -274,23 +281,27 @@ class _SportCardState extends State<SportCard> {
                         fontWeight: FontWeight.normal
                     ),
                   ),
-                  subtitle: Text("${sport.durationInHours} hour(s)"),
+                  subtitle: Text("${sport.durationInHours.toStringAsFixed(2)} hour(s)"),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min, // To keep the row compact
                     children: [
-                      Text("${sport.caloriesBurnt.toStringAsFixed(2)} cals"),
+                      Text("${sport.caloriesBurnt.toStringAsFixed(2)} kcal"),
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.redAccent),
                         onPressed: () {
                           showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (context) => Center(
                                 child: AlertDialog(
                                   content: const Text(
-                                      "Confirm to delete This Sport? "),
+                                      "Confirm to delete this sport? ",
+                                    textAlign: TextAlign.center,
+                                  ),
                                   actions: <Widget>[
                                     // usually buttons at the bottom of the dialog
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
                                           child: const Text("OK"),
@@ -301,6 +312,7 @@ class _SportCardState extends State<SportCard> {
                                             Navigator.pop(context);
                                           },
                                         ),
+                                        const SizedBox(width: 8),
                                         ElevatedButton(
                                           child: const Text("CANCEL"),
                                           onPressed: () {

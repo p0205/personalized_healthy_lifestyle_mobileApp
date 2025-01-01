@@ -1,5 +1,5 @@
 class UserMeal{
-  int id;
+  int? id;
   String mealType;
   int userId;
   int mealId;
@@ -11,20 +11,31 @@ class UserMeal{
   double? proteinInGrams;
   double? fatInGrams;
 
-  UserMeal(this.id,this.mealType, this.userId,this.mealId, this.mealName, this.date, this.amountInGrams,this.calories,this.carbsInGrams,this.proteinInGrams,this.fatInGrams);
+  UserMeal(
+      {this.id,
+      required this.mealType,
+        required this.userId,
+        required this.mealId,
+      this.mealName,
+      this.date,
+        required this.amountInGrams,
+      this.calories,
+      this.carbsInGrams,
+      this.proteinInGrams,
+      this.fatInGrams});
 
   factory UserMeal.fromJson(Map<String,dynamic> json) => UserMeal(
-      json['id'],
-      json['mealType'],
-      json['userId'],
-      json['mealId'],
-      json['mealName'],
-      json['date'],
-      json['amountInGrams'],
-      json['calories'],
-      json['carbsInGrams'],
-      json['proteinInGrams'],
-      json['fatInGrams']
+      id: json['id'],
+      mealType: json['mealType'],
+      userId: json['userId'],
+      mealId: json['mealId'],
+      mealName: json['mealName'],
+      date: json['date'],
+      amountInGrams: json['amountInGrams'],
+      calories: json['calories'],
+      carbsInGrams: json['carbsInGrams'],
+      proteinInGrams: json['proteinInGrams'],
+      fatInGrams: json['fatInGrams']
   );
 
   Map<String,dynamic> toJson(){
