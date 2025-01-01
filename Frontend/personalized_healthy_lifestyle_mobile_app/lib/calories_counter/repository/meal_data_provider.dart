@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io' show File;
+import 'dart:io' show File, Platform;
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
@@ -32,19 +32,19 @@ class MealApiProvider{
         _httpClient = httpClient ?? http.Client();
 
 
-  // static String _getBaseUrl() {
-  //   if (Platform.isAndroid) {
-  //     return "10.0.2.2:8080"; // Android emulator localhost
-  //
-  //   } else {
-  //     return "localhost:8080";
-  //   }
-  // }
+  static String _getBaseUrl() {
+    if (Platform.isAndroid) {
+      return "10.0.2.2:8080"; // Android emulator localhost
+
+    } else {
+      return "localhost:8080";
+    }
+  }
 
   // // physical Android devices
-  static String _getBaseUrl() {
-    return "192.168.1.3:8080";
-  }
+  // static String _getBaseUrl() {
+  //   return "192.168.1.3:8080";
+  // }
 
   // static String _getBaseUrl() {
   //   return "192.168.173.30:8080";
