@@ -3,7 +3,7 @@
 
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io' show File, Platform;
+import 'dart:io' show File;
 
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;

@@ -7,7 +7,6 @@ import 'package:schedule_generator/user/blocs/user_bloc.dart';
 
 import '../../../user/blocs/user_state.dart';
 import '../sport_main/blocs/sport_main_bloc.dart';
-import '../sport_main/screen/sport_main_page.dart';
 import '../sport_models/sport.dart';
 
 class AddUserSportScreen extends StatelessWidget{

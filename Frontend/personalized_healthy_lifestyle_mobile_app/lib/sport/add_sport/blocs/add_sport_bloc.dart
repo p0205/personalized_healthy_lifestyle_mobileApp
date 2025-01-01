@@ -12,7 +12,7 @@ class AddSportBloc extends Bloc<AddSportEvent,AddSportState>{
 
   final SportRepository sportRepository = SportRepository();
 
-  AddSportBloc() : super( AddSportState()) {
+  AddSportBloc() : super( const AddSportState()) {
     on<SportTypeListSelected>(_sportTypeListSelected);
     // on<LoadSportTypeList>(_loadSportTypeList);
     on<AddSportBtnSelectedEvent>(_addSportBtnSelected);

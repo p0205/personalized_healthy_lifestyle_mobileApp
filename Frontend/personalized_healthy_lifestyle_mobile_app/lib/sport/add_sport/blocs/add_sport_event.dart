@@ -2,6 +2,7 @@ part of 'add_sport_bloc.dart';
 
 abstract class AddSportEvent extends Equatable{
   const AddSportEvent();
+  @override
   List<Object?> get props => [];
 }
 

@@ -95,19 +95,18 @@ class _AlphabetListScrollViewState extends State<AlphabetListScrollView> {
 
 }
 
-Widget _buildListItem(ISuspensionBean item, BuildContext context) {
-  // Cast item to SportTypeList
-  final sportItem = item as SportTypeList;
-
-  return GestureDetector(
-    onTap: () {
-      print("Click ${sportItem.title}");
-      final model = context.read<AddSportBloc>();
-      model.add(SportTypeSelected(sportType: sportItem.title));
-
-    },
-    child: ListTile(
-      title: Text(sportItem.title),
-    ),
-  );
-}
+// Widget _buildListItem(ISuspensionBean item, BuildContext context) {
+//   // Cast item to SportTypeList
+//   final sportItem = item as SportTypeList;
+//
+//   return GestureDetector(
+//     onTap: () {
+//       final model = context.read<AddSportBloc>();
+//       model.add(SportTypeSelected(sportType: sportItem.title));
+//
+//     },
+//     child: ListTile(
+//       title: Text(sportItem.title),
+//     ),
+//   );
+// }

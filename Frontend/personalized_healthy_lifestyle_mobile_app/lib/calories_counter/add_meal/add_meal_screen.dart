@@ -1,5 +1,4 @@
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -181,24 +180,16 @@ class _AddMealScreenState extends State<AddMealScreen> {
 
               if(state.status == AddMealStatus.nutriExtracted){
 
-                print("Enter listener builder!!!!!!!!!");
                 final route = ModalRoute.of(context);
-                print("final route = ModalRoute.of(context);");
                 final isCurrentRoute = route?.isCurrent ?? false;
-                print("final isCurrentRoute = route?.isCurrent ?? false;");
-                print(isCurrentRoute);
                 if (isCurrentRoute) {
                   final bloc = BlocProvider.of<AddMealBloc>(context);
-                  print("final bloc = BlocProvider.of<AddMealBloc>(context);");
-                  print(isCurrentRoute);
                   if(bloc.state.meal?.unitWeight == null){
                     bloc.add(Per100SelectedEvent());
                   }else{
                     bloc.add(UnitWeightSelectedEvent());
                   }
 
-                  print(" if (isCurrentRoute) {");
-                  print("Enter nagivation!!!!!");
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -215,8 +206,6 @@ class _AddMealScreenState extends State<AddMealScreen> {
 
             },
             listenWhen: (previous,current){
-              print("Listener: ");
-              print(current.status);
               return (current.status == AddMealStatus.mealAdded || current.status == AddMealStatus.nutriExtracted || current.status == AddMealStatus.loading);
             },
           ),

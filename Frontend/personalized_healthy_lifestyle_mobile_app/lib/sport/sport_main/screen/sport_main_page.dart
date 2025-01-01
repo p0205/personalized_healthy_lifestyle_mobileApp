@@ -295,7 +295,7 @@ class _SportCardState extends State<SportCard> {
                             builder: (context) => Center(
                                 child: AlertDialog(
                                   content: const Text(
-                                      "Confirm to delete This Sport? ",
+                                      "Confirm to delete this sport? ",
                                     textAlign: TextAlign.center,
                                   ),
                                   actions: <Widget>[
@@ -312,6 +312,7 @@ class _SportCardState extends State<SportCard> {
                                             Navigator.pop(context);
                                           },
                                         ),
+                                        const SizedBox(width: 8),
                                         ElevatedButton(
                                           child: const Text("CANCEL"),
                                           onPressed: () {

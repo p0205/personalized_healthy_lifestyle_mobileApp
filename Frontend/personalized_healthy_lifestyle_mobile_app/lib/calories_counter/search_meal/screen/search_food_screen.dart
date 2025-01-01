@@ -8,7 +8,6 @@ import 'package:schedule_generator/user/blocs/user_state.dart';
 import '../../../user/blocs/user_bloc.dart';
 import '../../add_user_meal/screen/food_details_page.dart';
 import '../blocs/search_meal_bloc.dart';
-import '../../repository/meal_repository.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key, required this.mealType});
@@ -34,7 +33,7 @@ class DebouncedSearchBar extends StatefulWidget {
   final String mealType;
 
   @override
-  _DebouncedSearchBarState createState() => _DebouncedSearchBarState();
+  State<DebouncedSearchBar> createState() => _DebouncedSearchBarState();
 }
 class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
   final SearchController _searchController = SearchController();

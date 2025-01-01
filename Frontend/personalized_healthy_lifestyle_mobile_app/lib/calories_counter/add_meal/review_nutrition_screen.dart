@@ -1,4 +1,4 @@
-import 'package:dotted_border/dotted_border.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +34,7 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.meal.name ?? '';
+    _nameController.text = widget.meal.name ;
     _unitWeightController.text = widget.meal.unitWeight?.toString() ?? '';
     _energyController.text = widget.meal.energyPer100g?.toString() ?? '';
     _carbsController.text = widget.meal.carbsPer100g?.toString() ?? '';
@@ -227,10 +227,7 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
             child: GestureDetector(
               onTap: () {
                 final bloc = context.read<AddMealBloc>();
-                print("At review screen : per 100g");
                 bloc.add(Per100SelectedEvent());
-                print("At review screen : per 100 g bloc.state.isUnitWeightSelected");
-                print(bloc.state.isUnitWeightSelected);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -254,10 +251,7 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
             child: GestureDetector(
               onTap: ()  {
                 final bloc = context.read<AddMealBloc>();
-                print("At review screen : select unit weight");
                 bloc.add(UnitWeightSelectedEvent());
-                print("At review screen : unit weight bloc.state.isUnitWeightSelected");
-                print(bloc.state.isUnitWeightSelected);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
