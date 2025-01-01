@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
@@ -43,6 +44,7 @@ class MealApiRepository{
   Future<void> deleteUserMeal(int userMealId) async{
     await mealApiProvider.deleteUserMeal(userMealId);
   }
+
 
   Future<Meal?> extractNutrition(File file) async{
 

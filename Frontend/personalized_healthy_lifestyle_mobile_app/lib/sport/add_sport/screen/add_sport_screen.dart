@@ -110,7 +110,7 @@ class _AddSportScreenState extends State<AddSportScreen> {
                       ), onPressed: () {
                       if (_formKey.currentState!.validate() && _nameController.text.isNotEmpty && _caloriesBurntController.text.isNotEmpty) {
                         final bloc = context.read<AddSportBloc>();
-                        bloc.add(AddSportBtnSelectedEvent(name: _nameController.text, caloriesBurnt: double.parse(_caloriesBurntController.text)));
+                        bloc.add(AddSportBtnSelectedEvent(name: _nameController.text.toUpperCase(), caloriesBurnt: double.parse(_caloriesBurntController.text)));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Please fill all required fields')),

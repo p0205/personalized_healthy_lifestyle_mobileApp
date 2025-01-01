@@ -21,6 +21,7 @@ class AddMealState extends Equatable{
   final bool isUnitWeightSelected;
   final File? file;
   final bool isReviewEditable;
+  final double? uploadProgress;
 
 
   const AddMealState({
@@ -29,12 +30,13 @@ class AddMealState extends Equatable{
     this.message,
     this.isUnitWeightSelected = false,
     this.file,
-    this.isReviewEditable = false
+    this.isReviewEditable = false,
+    this.uploadProgress
   });
 
 
   @override
-  List<Object?> get props => [status,meal,isUnitWeightSelected,file,isReviewEditable];
+  List<Object?> get props => [status,meal,isUnitWeightSelected,file,isReviewEditable,uploadProgress];
 
   AddMealState copyWith ({
     Meal? meal,
@@ -42,7 +44,8 @@ class AddMealState extends Equatable{
     String? message,
     bool? isUnitWeightSelected,
     File? file,
-    bool? isReviewEditable
+    bool? isReviewEditable,
+    double? uploadProgress
   })
   {
     return AddMealState(
@@ -52,6 +55,7 @@ class AddMealState extends Equatable{
         isUnitWeightSelected: isUnitWeightSelected?? this.isUnitWeightSelected,
         file: file ?? this.file,
         isReviewEditable: isReviewEditable ?? this.isReviewEditable,
+        uploadProgress: uploadProgress ?? this.uploadProgress,
     );
   }
 }

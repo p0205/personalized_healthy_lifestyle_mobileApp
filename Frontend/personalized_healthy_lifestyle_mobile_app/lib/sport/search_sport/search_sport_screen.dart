@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:schedule_generator/common_widgets/loading_overlay.dart';
 import 'package:schedule_generator/sport/add_user_sport/add_user_sport_screen.dart';
 import 'package:schedule_generator/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_state.dart';
@@ -74,7 +75,12 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
           BlocConsumer<SearchSportBloc, SearchSportState>(
             builder: (context,state){
               if (state.status == SearchSportStatus.loading){
-                return  const Center(child: CircularProgressIndicator());
+                return const Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 8.0,vertical: 20),
+                  child:  Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
               if(state.status == SearchSportStatus.sportsLoaded && state.sports != null){
                 if(state.sports!.isEmpty) {
@@ -173,7 +179,7 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
               }
             }
             else if(state.status == SearchSportStatus.addNewSportSelected){
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {

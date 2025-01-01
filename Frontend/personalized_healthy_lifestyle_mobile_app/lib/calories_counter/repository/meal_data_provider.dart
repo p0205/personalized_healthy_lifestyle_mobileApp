@@ -1,5 +1,6 @@
 //search food return List<Food> (id ,name)
 //search specific food return Food
+
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io' show File, Platform;
@@ -29,7 +30,7 @@ class MealApiProvider{
   MealApiProvider({http.Client? httpClient})
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
-  //
+
   // static String _getBaseUrl() {
   //   if (Platform.isAndroid) {
   //     return "10.0.2.2:8080"; // Android emulator localhost
@@ -110,7 +111,6 @@ class MealApiProvider{
 
   Future<void> addUserMeal(UserMeal userMeal) async {
 
-    print("Request");
 
     // final uri = Uri.http(_baseUrl,"/meal/user",{"userId": userId.toString()});
     final uri = Uri.http(_baseUrl,"/meal/user");
@@ -150,6 +150,35 @@ class MealApiProvider{
     }
   }
 
+
+  // Future<Meal?> extractNutrition(File file, StreamController<double> progressController) async {
+  //   final uri = Uri.http(_baseUrl, "/image/extract");
+  //   final formData = FormData.fromMap({
+  //     'file': await MultipartFile.fromFile(file.path),
+  //   });
+  //
+  //   try {
+  //     final response = await dio.post(
+  //       uri.toString(),
+  //       data: formData,
+  //       onSendProgress: (int sent, int total) {
+  //         // Emit progress as a value between 0.0 and 1.0
+  //         progressController.add(sent / total);
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       // Return the Meal object after successful upload
+  //       return Meal.fromJson(response.data);
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     throw Exception("File upload failed: $e");
+  //   } finally {
+  //     progressController.close();
+  //   }
+  // }
   Future<Meal?> extractNutrition(File file) async{
     final uri = Uri.http(_baseUrl,"/image/extract");
     // var request = http.MultipartRequest("POST",uri);
@@ -169,7 +198,6 @@ class MealApiProvider{
         uri.toString(),
         data: formData,
         onSendProgress: (int sent, int total) {
-          print('$sent $total');
       },);
     if(response.statusCode == 200){
       //TODO: Upload successfully
@@ -179,6 +207,9 @@ class MealApiProvider{
       return null;
     }
   }
+
+
+
 }
 
 String formatDate(DateTime dateTime){

@@ -46,8 +46,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
             builder: (context, state) {
               return Column(
                 children: [
-                  if(state.status == AddMealStatus.initial|| state.status == AddMealStatus.fileUploaded)
-                    _buildUploadNutritionTable(),
+                  // if(state.status == AddMealStatus.initial|| state.status == AddMealStatus.fileUploaded)
+                  _buildUploadNutritionTable(),
                   const SizedBox(width: 10),
                   Form(
                     key: _formKey,
@@ -123,7 +123,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                           if (_formKey.currentState!.validate() && _nameController.text.isNotEmpty) {
                             final bloc = context.read<AddMealBloc>();
                             bloc.add(AddMealBtnSelectedEvent(
-                                mealNameInputString: _nameController.text,
+                                mealNameInputString: _nameController.text.toUpperCase(),
                                 unitWeightInputString: _unitWeightController.text,
                                 energyInputString: _energyController.text,
                                 carbsInputString: _carbsController.text,
@@ -348,7 +348,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                final mealName = _nameDialogController.text.trim();
+                                final mealName = _nameDialogController.text.toUpperCase().trim();
                                 if (mealName.isNotEmpty || mealName.length > 3) {
                                   Navigator.of(context).pop(); // Close dialog
                                   bloc.add(ExtractNutriEvent(file: bloc.state.file!, name: mealName));

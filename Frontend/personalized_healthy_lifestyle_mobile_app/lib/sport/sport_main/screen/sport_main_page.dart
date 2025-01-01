@@ -75,7 +75,7 @@ class _SportMainPageState extends State<SportMainPage> {
                             child: Center(child: Text("No results found")),
                           ),
                           ElevatedButton(onPressed: (){
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => SearchSportScreen(date: state.dateString!),

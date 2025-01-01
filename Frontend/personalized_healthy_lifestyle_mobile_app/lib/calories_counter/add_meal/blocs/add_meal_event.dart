@@ -32,6 +32,12 @@ class UnitWeightSelectedEvent extends AddMealEvent {}
 
 class UploadFileEvent extends AddMealEvent{}
 
+class UpdateProgressEvent extends AddMealEvent {
+  final double progress;
+
+  const UpdateProgressEvent(this.progress);
+}
+
 class ExtractNutriEvent extends AddMealEvent{
   final File file;
   final String name;
@@ -41,5 +47,6 @@ class ExtractNutriEvent extends AddMealEvent{
 class ToggleEditableEvent extends AddMealEvent{}
 
 class ReviewPageLoadedEvent extends AddMealEvent{}
+
 
 

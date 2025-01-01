@@ -9,7 +9,6 @@ class SportTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //TODO: fetch sport type
-print("Enter sport type screen");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
@@ -44,6 +43,7 @@ class _AlphabetListScrollViewState extends State<AlphabetListScrollView> {
   Widget build(BuildContext context) {
 
     List<ISuspensionBean> items = context.read<AddSportBloc>().state.sportTypeList!;
+
     return AzListView(
         data:items,
         indexBarMargin: const EdgeInsets.all(10),
@@ -63,18 +63,6 @@ class _AlphabetListScrollViewState extends State<AlphabetListScrollView> {
             ),
           );
         },
-        indexBarOptions: const IndexBarOptions(
-          needRebuild: true,
-          indexHintAlignment: Alignment.centerRight,
-          selectTextStyle: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold
-          ),
-          selectItemDecoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.blue
-          )
-        ),
         itemCount: items.length,
         itemBuilder: (context,index){
           final ISuspensionBean item = items[index];
@@ -87,7 +75,20 @@ class _AlphabetListScrollViewState extends State<AlphabetListScrollView> {
               Navigator.of(context).pop();
             },
           );
-        }
+        },
+        indexBarOptions: const IndexBarOptions(
+          needRebuild: true,
+          indexHintAlignment: Alignment.centerRight,
+          selectTextStyle: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold
+          ),
+          selectItemDecoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.blue
+          )
+        ),
+
     );
 
   }
