@@ -16,7 +16,7 @@ class UserSport {
         json['id'],
         json['userId'],
         json['sportId'],
-        json['sportName'],
+        json['sportName'].toString().toUpperCase(),
         json['date'],
         json['durationInHours'],
         json['caloriesBurnt'],

@@ -9,7 +9,7 @@ class Sport{
 
   factory Sport.fromJson(Map<String,dynamic> json) => Sport(
       id: json['id'],
-      name: json['name'],
+      name: json['name'].toString().toUpperCase(),
       caloriesBurntPerHourPerKg: json['caloriesBurntPerHourPerKg'],
       type: json['type'],
   );
