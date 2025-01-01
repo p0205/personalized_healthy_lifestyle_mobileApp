@@ -71,14 +71,15 @@ class FoodDetailsPage extends StatelessWidget{
                     donutSizePercentage: 0.7,
                     columnLabel: "Value per 100 g (g)",
                     containerHeight: 250,
+
                     centerText: meal.energyPer100g != null ? "${meal.energyPer100g?.toStringAsFixed(2)} kcal\n per 100 g" : null
                   ),
                 ),
                 const SizedBox(height: 30),
-
-
                  Text(
                    meal.unitWeight != null ? "Serving size: ${meal.unitWeight}g" : "No serving size",
+
+
                   style: const TextStyle(
                       fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -124,6 +125,7 @@ class _ToggleButtonState extends State<ToggleButton> {
   Widget build(BuildContext context) {
     double? userInputValue ;
     return BlocConsumer<AddUserMealBloc,AddUserMealState>(
+
       builder: (context, state) {
         return Column(
           children: [
@@ -148,6 +150,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                   }else{
                     model.add(NoOfServingsSelected());
                   }
+
                 }else{
                   model.add(AmountInGramsSelected());
                 }
@@ -188,6 +191,7 @@ class _ToggleButtonState extends State<ToggleButton> {
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
+
                       final model = BlocProvider.of<AddUserMealBloc>(context);
                       setState(() {
                         _controller.clear();
@@ -220,6 +224,7 @@ class _ToggleButtonState extends State<ToggleButton> {
               child: ElevatedButton(onPressed: ()
               {
                 final model = BlocProvider.of<AddUserMealBloc>(context);
+
                 model.add(UserInput(food: widget.meal, userInput: userInputValue!));
 
               },
@@ -238,12 +243,13 @@ class _ToggleButtonState extends State<ToggleButton> {
               visible: state.isCalculated,
               child: ElevatedButton(onPressed: () async
               {
+
                 final model = BlocProvider.of<AddUserMealBloc>(context);
+
                 final userState = BlocProvider.of<UserBloc>(context).state;
                 final userMealState = model.state;
 
                 if (userState is LoginSuccess) {
-
                   model.add(
                       AddMealBtnClicked(
                       mealType: widget.mealType.toUpperCase(),
@@ -280,6 +286,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                             ElevatedButton(
                              child: const Text("OK"),
                              onPressed: () {
+
                                Navigator.popUntil(context, (route) => route.settings.name == "/mealMain");
                              },
                            ),
@@ -287,9 +294,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                        )
                      ),
                    );
-
            },
-
       listenWhen: (previous,current){
         return current.status == AddUserMealStatus.mealAdded;
       },
@@ -304,7 +309,7 @@ class NutrientCardGroup extends StatefulWidget {
 
   const NutrientCardGroup({super.key});
   @override
-  _NutrientCardGroupState createState() => _NutrientCardGroupState();
+  State<NutrientCardGroup> createState() => _NutrientCardGroupState();
 }
 
 class _NutrientCardGroupState extends State<NutrientCardGroup> {

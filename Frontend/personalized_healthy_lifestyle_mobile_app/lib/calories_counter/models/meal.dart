@@ -7,6 +7,7 @@ class Meal{
   double? proteinPer100g;
   double? fatPer100g;
 
+
   Meal({this.id, required this.name,this.unitWeight,this.energyPer100g,this.carbsPer100g,this.proteinPer100g,this.fatPer100g});
 
   factory Meal.fromJson(Map<String,dynamic> json) => Meal(
@@ -17,6 +18,7 @@ class Meal{
       carbsPer100g: json['carbsPer100g'],
       proteinPer100g: json['proteinPer100g'],
       fatPer100g: json['fatPer100g']
+
   );
 
   Map<String,dynamic> toJson(){
@@ -34,6 +36,5 @@ class Meal{
   static List<Meal> fromJsonArray(List<dynamic> jsonArray){
     return jsonArray.map((json) => Meal.fromJson(json)).toList();
   }
-
 
 }

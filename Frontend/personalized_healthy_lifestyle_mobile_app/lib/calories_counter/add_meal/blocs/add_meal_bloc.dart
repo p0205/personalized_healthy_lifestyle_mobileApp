@@ -32,12 +32,10 @@ class AddMealBloc extends Bloc<AddMealEvent,AddMealState>{
   }
 
   Future<void> _per100SelectedEvent(Per100SelectedEvent event, Emitter<AddMealState> emit) async {
-    print("Enter 100 event");
     emit(state.copyWith(isUnitWeightSelected: false));
   }
 
   Future<void> _unitWeightSelectedEvent(UnitWeightSelectedEvent event, Emitter<AddMealState> emit) async {
-    print("weight event");
     emit(state.copyWith(isUnitWeightSelected: true));
   }
 

@@ -1,9 +1,7 @@
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:schedule_generator/common_widgets/loading_overlay.dart';
+
 import 'package:schedule_generator/sport/add_user_sport/add_user_sport_screen.dart';
 import 'package:schedule_generator/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:schedule_generator/user/blocs/user_state.dart';
@@ -42,13 +40,12 @@ class DebouncedSearchBar extends StatefulWidget {
 
 
   @override
-  _DebouncedSearchBarState createState() => _DebouncedSearchBarState();
+  State<DebouncedSearchBar> createState() => _DebouncedSearchBarState();
 }
 
 class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
 
   final SearchController _searchController = SearchController();
-
 
   @override
   Widget build(BuildContext context) {

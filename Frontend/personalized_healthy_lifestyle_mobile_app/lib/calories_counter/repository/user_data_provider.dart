@@ -1,5 +1,4 @@
 
-
 import 'package:http/http.dart' as http;
 
 
@@ -14,6 +13,7 @@ class UserDataProvider {
   UserDataProvider({http.Client? httpClient})
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
+
 
   // static String _getBaseUrl() {
   //   if (Platform.isAndroid) {
@@ -31,7 +31,6 @@ class UserDataProvider {
   // static String _getBaseUrl() {
   //   return "192.168.173.30:8080";
   // }
-
 
   //
   // Future<User> fetchUser(int id) async {

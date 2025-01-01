@@ -1,10 +1,10 @@
 //search food return List<Food> (id ,name)
 //search specific food return Food
 
+
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io' show File;
-
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:schedule_generator/calories_counter/models/meal_summary.dart';
@@ -30,6 +30,7 @@ class MealApiProvider{
   MealApiProvider({http.Client? httpClient})
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
+
 
   // static String _getBaseUrl() {
   //   if (Platform.isAndroid) {
@@ -85,7 +86,6 @@ class MealApiProvider{
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(meal));
 
-
     if(response.statusCode != 201){
       throw AddMealFailure();
     }
@@ -99,6 +99,7 @@ class MealApiProvider{
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
+
       throw GetUserMealListByDateFailure();
     }
 
@@ -109,14 +110,15 @@ class MealApiProvider{
     });
   }
 
-  Future<void> addUserMeal(UserMeal userMeal) async {
 
+  Future<void> addUserMeal(UserMeal userMeal) async {
 
     // final uri = Uri.http(_baseUrl,"/meal/user",{"userId": userId.toString()});
     final uri = Uri.http(_baseUrl,"/meal/user");
     final response = await _httpClient.post(
         uri,
         headers: {"Content-Type": "application/json"},
+
         body: jsonEncode(userMeal)
     );
 
@@ -132,6 +134,7 @@ class MealApiProvider{
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
+
       throw GetNutritionalSummaryFailure();
     }
     final Map<String, dynamic> data = json.decode(response.body);
@@ -149,6 +152,7 @@ class MealApiProvider{
       throw DeleteUserMealFailure();
     }
   }
+
 
 
   // Future<Meal?> extractNutrition(File file, StreamController<double> progressController) async {
@@ -207,8 +211,6 @@ class MealApiProvider{
       return null;
     }
   }
-
-
 
 }
 

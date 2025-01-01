@@ -12,6 +12,7 @@ enum AddUserMealStatus{
   failure
 }
 
+
 class AddUserMealState extends Equatable {
   final AddUserMealStatus status;
   final double? amountIntakeInGrams;
@@ -24,6 +25,7 @@ class AddUserMealState extends Equatable {
   final bool isCalculated;
   final int userId;
   final int mealId;
+
 
   const AddUserMealState({
     required this.userId,
@@ -42,6 +44,7 @@ class AddUserMealState extends Equatable {
   @override
   List<Object?> get props => [userId, mealId, status, amountIntakeInGrams, carbsIntake, proteinIntake, fatIntake,energyIntake, message, isNoOfServingSelected, isCalculated];
 
+
   AddUserMealState copyWith({
     int? userId,
     int? mealId,
@@ -56,6 +59,7 @@ class AddUserMealState extends Equatable {
     String? message
 
   }) {
+
     return AddUserMealState(
       userId: userId ?? this.userId,
       mealId: mealId ?? this.userId,

@@ -58,6 +58,7 @@ class SearchSportBloc extends Bloc<SearchSportEvent,SearchSportState>{
     }
   }
 
+
   Future<void> _backToSearchFoodPage(BackToSearchSportPageEvent event, Emitter<SearchSportState> emit) async {
     emit(state.copyWith(status:SearchSportStatus.selected));
   }

@@ -1,6 +1,8 @@
  import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:schedule_generator/calories_counter/models/user_meal.dart';
+
 import 'package:schedule_generator/calories_counter/repository/meal_repository.dart';
 
 import '../../models/meal.dart';
@@ -14,7 +16,6 @@ class AddUserMealBloc extends Bloc<AddUserMealEvent,AddUserMealState>{
   final Meal meal;
   final int userId;
   final String mealType;
-
 
   AddUserMealBloc({required this.meal, required this.mealType, required this.userId})
       : super(AddUserMealState(

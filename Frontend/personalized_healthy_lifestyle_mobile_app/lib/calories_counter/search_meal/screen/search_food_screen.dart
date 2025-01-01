@@ -29,6 +29,7 @@ class SearchPage extends StatelessWidget {
 }
 
 class DebouncedSearchBar extends StatefulWidget {
+
   const DebouncedSearchBar({super.key, required this.mealType});
   final String mealType;
 

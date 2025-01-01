@@ -44,6 +44,7 @@ class SportDataProvider{
   // static String _getBaseUrl() {
   //   return "192.168.173.30:8080";
   // }
+
   // api : GET localhost:8080/sport/search
   Future<List<Sport>> getMatchingSportList(String query) async {
 
@@ -133,7 +134,6 @@ class SportDataProvider{
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(request)
     );
-
     if(response.statusCode != 201){
       throw AddUserSportFailure();
     }

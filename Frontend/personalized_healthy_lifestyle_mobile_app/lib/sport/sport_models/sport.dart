@@ -4,6 +4,7 @@ class Sport{
   double? caloriesBurntPerHourPerKg;
   String? type;
 
+
   Sport({this.id, required this.name, this.caloriesBurntPerHourPerKg, this.type});
 
   factory Sport.fromJson(Map<String,dynamic> json) => Sport(

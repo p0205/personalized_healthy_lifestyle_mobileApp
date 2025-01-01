@@ -1,10 +1,8 @@
 part of 'add_meal_bloc.dart';
 
-
-
-
 abstract class AddUserMealEvent extends Equatable{
   const AddUserMealEvent();
+
 
   @override
   List<Object?> get props => [];
@@ -22,6 +20,7 @@ class UserInput extends AddUserMealEvent{
   @override
   List<Object?> get props => [food, userInput];
 }
+
 
 class DisposeCalculation extends AddUserMealEvent{}
 

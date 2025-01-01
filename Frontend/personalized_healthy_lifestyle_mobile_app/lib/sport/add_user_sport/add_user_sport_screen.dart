@@ -57,6 +57,7 @@ class AddUserSportScreen extends StatelessWidget{
                         const SizedBox(width: 16),
                         Expanded(
                           child: _buildInfoBox('Calories burnt per kg/hour', '${sport.caloriesBurntPerHourPerKg} kcal'),
+
                         ),
                       ],
                     ),
@@ -289,14 +290,15 @@ class _toggleButtonState extends State<ToggleButton> {
                         child: const Text("OK"),
                         onPressed: () {
                           sportMainBloc.add(LoadUserSportList());
+
                           Navigator.popUntil(context, (route) => route.settings.name == "/sportMain");
+
                         },
                       ),
                     ],
                   )
               ),
             );
-
       },
 
       listenWhen: (previous,current){
